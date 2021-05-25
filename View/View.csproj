@@ -72,6 +72,8 @@
     <Compile Include="FindCalculationForm.Designer.cs">
       <DependentUpon>FindCalculationForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MotionFieldsType.cs" />
+    <Compile Include="MotionType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AddCalculationForm.resx">

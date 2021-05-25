@@ -128,7 +128,7 @@
             this.findButton.TabIndex = 6;
             this.findButton.Text = "Поиск";
             this.findButton.UseVisualStyleBackColor = true;
-            this.findButton.Click += new System.EventHandler(this.addCalculationButton_Click);
+            this.findButton.Click += new System.EventHandler(this.findButton_Click);
             // 
             // groupBox2
             // 

@@ -37,7 +37,9 @@ namespace View
         {
             try
             {
-                if (!string.IsNullOrEmpty(deleteTextBox.Text) && int.Parse(deleteTextBox.Text) > 0)
+                if (!string.IsNullOrEmpty(deleteTextBox.Text) && 
+                    int.TryParse(deleteTextBox.Text, out DeleteNumber) && 
+                    int.Parse(deleteTextBox.Text) > 0)
                 {
                     DeleteNumber = int.Parse(deleteTextBox.Text);
                     CoordinateDeterminationForm.Flag = true;
@@ -45,7 +47,8 @@ namespace View
                 }
                 else
                 {
-                    throw new Exception("Номер строки должен принимать целое положительное число больше нуля.");
+                    throw new Exception("Номер строки должен принимать целое положительное " +
+                        "число больше нуля.");
                 }
             }
             catch (Exception exception)
