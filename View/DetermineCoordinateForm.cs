@@ -23,11 +23,6 @@ namespace View
         private List<MotionBase> _motionList = new List<MotionBase>();
 
         /// <summary>
-        /// Параметр, описывающий признак нажатия нужной кнопки на смежных формах
-        /// </summary>
-        public static bool Flag = false;
-
-        /// <summary>
         /// Дейтсвия при открытии формы
         /// </summary>
         public CoordinateDeterminationForm()
@@ -45,15 +40,13 @@ namespace View
         /// <param name="e">Данные о событии</param>
         private void addCalculationButton_Click(object sender, EventArgs e)
         {
-            Flag = false;
-
             AddCalculationForm form = new AddCalculationForm();
             form.FormClosed += form_FormClosed;
             form.Show();
                         
             void form_FormClosed(object senderForm, FormClosedEventArgs f)
             {
-                if (Flag == true)
+                if (form.DialogResult == DialogResult.OK)
                 {
                     _motionList.Add(form.TmpMotion);
                     RefreshOfDataGridView(_motionList);
@@ -67,14 +60,17 @@ namespace View
         /// <param name="list">Список для вывода на экран</param>
         private void RefreshOfDataGridView(List<MotionBase> list)
         {
-            dataGridView1.DataSource = null;
-            dataGridView1.Columns.Clear();
-            dataGridView1.Columns.Add("Number", "№");
-            dataGridView1.Columns[0].Width = 30;
-            dataGridView1.DataSource = new List<MotionBase>(list);
+            dataGridView.DataSource = null;
+            dataGridView.Columns.Clear();
+            dataGridView.Columns.Add("Number", "№");
+            dataGridView.Columns[0].Width = 30;
+            dataGridView.DataSource = new List<MotionBase>(list);
+            dataGridView.RowHeadersVisible = false;
+            dataGridView.Columns[1].HeaderText = "Координата";
+            dataGridView.Columns[2].HeaderText = "Время";
             int counter = 1;
 
-            foreach (DataGridViewRow line in dataGridView1.Rows)
+            foreach (DataGridViewRow line in dataGridView.Rows)
             {
                 line.Cells[0].Value = counter;
                 counter++;
@@ -106,38 +102,44 @@ namespace View
         /// <param name="e"></param>
         private void findButton_Click(object sender, EventArgs e)
         {
-            Flag = false;
-
-            FindCalculationForm form = new FindCalculationForm();
-            form.FormClosed += form_FormClosed;
-            form.Show();
-
-            void form_FormClosed(object senderForm, FormClosedEventArgs f)
+            if (dataGridView.RowCount == 0)
             {
-                var findResultList = new List<MotionBase>();
+                MessageBox.Show("Поиск не возможен, расчеты отсутсвуют.", "Ошибка", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                FindCalculationForm form = new FindCalculationForm();
+                form.FormClosed += form_FormClosed;
+                form.Show();
 
-                if (Flag == true)
+                void form_FormClosed(object senderForm, FormClosedEventArgs f)
                 {
-                    foreach (MotionBase node in _motionList)
-                    {
-                        if (Math.Round(node.Coordinate, 4) == form.Coordinate &&
-                            node.Time == form.Time)
-                        {
-                            findResultList.Add(node);
-                        }
-                    }
+                    var findResultList = new List<MotionBase>();
 
-                    if (findResultList.Count != 0)
+                    if (form.DialogResult == DialogResult.OK)
                     {
-                        RefreshOfDataGridView(findResultList);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Расчет с указанными параметрами отсутствует. Уточните параметры поиска.", "Уведомление");
+                        foreach (MotionBase node in _motionList)
+                        {
+                            if (Math.Round(node.Coordinate, 4) == form.Coordinate &&
+                                node.Time == form.Time)
+                            {
+                                findResultList.Add(node);
+                            }
+                        }
+
+                        if (findResultList.Count != 0)
+                        {
+                            RefreshOfDataGridView(findResultList);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Расчет с указанными параметрами отсутствует. " +
+                                "Уточните параметры поиска.", "Уведомление");
+                        }
                     }
                 }
             }
-
         }
 
         /// <summary>
@@ -199,28 +201,37 @@ namespace View
         /// <param name="e"></param>
         private void removeCalculationButton_Click(object sender, EventArgs e)
         {
-            discardButton_Click(sender, e);
-
-            var form = new DeleteCalculationForm();
-            form.FormClosed += form_FormClosed;
-            form.Show();
-
-            void form_FormClosed(object senderForm, FormClosedEventArgs f)
+            if (dataGridView.RowCount == 0)
             {
-                if (Flag == true && _motionList.Count >= form.DeleteNumber && form.DeleteNumber >= 0 && _motionList.Count != 0)
+                MessageBox.Show("Удаление не возможно, расчеты отсутсвуют.", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                //Обновление dataGridView перед удалением на тот случай, если отображались
+                //только результаты поиска
+                //
+                discardButton_Click(sender, e);
+
+                var form = new DeleteCalculationForm();
+                form.FormClosed += form_FormClosed;
+                form.Show();
+
+                void form_FormClosed(object senderForm, FormClosedEventArgs f)
                 {
-                    _motionList.RemoveAt(form.DeleteNumber - 1);
-                    RefreshOfDataGridView(_motionList);
-                }
-                else if (Flag == true && _motionList.Count == 0)
-                {
-                    MessageBox.Show("Удаление невозможно. Исходный файл не содержит расчетов.",
-                        "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                else if (Flag == true)
-                {
-                    MessageBox.Show("Удаление невозможно. Расчет с указанным номером отсутствует.",
-                        "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (form.DialogResult == DialogResult.OK && form.DeleteNumber != 0)
+                    {
+                        if (_motionList.Count >= form.DeleteNumber && _motionList.Count != 0)
+                        {
+                            _motionList.RemoveAt(form.DeleteNumber - 1);
+                            RefreshOfDataGridView(_motionList);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Удаление невозможно. Расчет с указанным номером отсутствует.",
+                                "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
                 }
             }
         }

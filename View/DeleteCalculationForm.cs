@@ -41,9 +41,8 @@ namespace View
                 if (!string.IsNullOrEmpty(deleteTextBox.Text) && 
                     int.TryParse(deleteTextBox.Text, out DeleteNumber) && 
                     int.Parse(deleteTextBox.Text) > 0)
-                {
+                {                    
                     DeleteNumber = int.Parse(deleteTextBox.Text);
-                    CoordinateDeterminationForm.Flag = true;
                     Close();
                 }
                 else
@@ -65,7 +64,6 @@ namespace View
         /// <param name="e"></param>
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            CoordinateDeterminationForm.Flag = false;
             Close();
         }
     }

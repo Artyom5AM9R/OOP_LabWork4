@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Model;
@@ -43,19 +44,25 @@ namespace View
         private void okButton_Click(object sender, EventArgs e)
         {
             try
-            {
-                coordinateTextBox.Text = coordinateTextBox.Text.Replace(".", ",");
-                timeTextBox.Text = timeTextBox.Text.Replace(".", ",");
+            {                
+                Regex correctValueRegex = new Regex(@"(^(-)?([0-9]+)(\,|\.)?([0-9])+$)|(^(-)?([0-9])+$)");
 
-                if (double.TryParse(coordinateTextBox.Text, out Coordinate) &&
-                    double.TryParse(timeTextBox.Text, out Time) && Time > 0)
+                if (correctValueRegex.IsMatch(coordinateTextBox.Text) &&
+                    correctValueRegex.IsMatch(timeTextBox.Text))
                 {
-                    CoordinateDeterminationForm.Flag = true;
-                    Close();
-                }
-                else if (double.TryParse(timeTextBox.Text, out Time) && Time <= 0)
-                {
-                    throw new Exception("Время должно быть больше нуля.");
+                    coordinateTextBox.Text = coordinateTextBox.Text.Replace(".", ",");
+                    timeTextBox.Text = timeTextBox.Text.Replace(".", ",");
+
+                    if (double.Parse(timeTextBox.Text) > 0)
+                    {
+                        Coordinate = double.Parse(coordinateTextBox.Text);
+                        Time = double.Parse(timeTextBox.Text);
+                        Close();
+                    }
+                    else
+                    {
+                        throw new Exception("Время должно быть больше нуля.");
+                    }
                 }
                 else if (string.IsNullOrEmpty(coordinateTextBox.Text) || string.IsNullOrEmpty(timeTextBox.Text))
                 {

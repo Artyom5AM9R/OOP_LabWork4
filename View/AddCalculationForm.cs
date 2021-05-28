@@ -33,7 +33,7 @@ namespace View
         /// Регулярное выражение для отбора правильных вариантов заполнения всех textBox, 
         /// кроме startingPositionTextBox
         /// </summary>
-        private Regex _correctValueRegex = new Regex(@"^(-)?([0-9]+)(.|,)?([0-9])+$");
+        private Regex _correctValueRegex = new Regex(@"(^(-)?([0-9]+)(\,|\.)?([0-9])+$)|(^(-)?([0-9])+$)");
 
         /// <summary>
         /// Регулярное выражение для отбора правильных вариантов заполнения startingPositionTextBox 
@@ -269,7 +269,12 @@ namespace View
         private void OkButton_Click(object sender, EventArgs e)
         {
             try
-            {                
+            {
+                if (string.IsNullOrEmpty(comboBox.Text))
+                {
+                    throw new Exception("Тип движения не выбран!");
+                }
+
                 foreach (Control ctrl in groupBox.Controls)
                 {
                     if (ctrl.GetType() == typeof(TextBox))
@@ -325,15 +330,7 @@ namespace View
                         break;
                 }
 
-                if (!string.IsNullOrEmpty(comboBox.Text))
-                {
-                    CoordinateDeterminationForm.Flag = true;
-                    Close();
-                }
-                else
-                {
-                    throw new Exception("Тип движения не выбран!");
-                }
+                Close();
             }
             catch (Exception exception)
             {                
