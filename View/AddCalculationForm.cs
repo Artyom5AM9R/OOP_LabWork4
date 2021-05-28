@@ -70,7 +70,7 @@ namespace View
         public AddCalculationForm()
         {
             InitializeComponent();
-
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             comboBox.SelectedIndexChanged += comboBox_SelectedIndexChanged;
             comboBox.Items.Add(GetDescription(MotionType.UniformMotion));
             comboBox.Items.Add(GetDescription(MotionType.AcceleratedMotion));

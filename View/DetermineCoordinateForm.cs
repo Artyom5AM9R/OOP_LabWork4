@@ -33,7 +33,7 @@ namespace View
         public CoordinateDeterminationForm()
         {
             InitializeComponent();
-
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             openFileDialog.Filter = "Specific files(*.mtn) | *.mtn";
             saveFileDialog.Filter = "Specific files(*.mtn) | *.mtn";
         }

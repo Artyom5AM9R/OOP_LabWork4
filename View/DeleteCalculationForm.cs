@@ -26,6 +26,7 @@ namespace View
         public DeleteCalculationForm()
         {
             InitializeComponent();
+            FormBorderStyle = FormBorderStyle.FixedSingle;
         }
 
         /// <summary>

@@ -32,6 +32,7 @@ namespace View
         public FindCalculationForm()
         {
             InitializeComponent();
+            FormBorderStyle = FormBorderStyle.FixedSingle;
         }
 
         /// <summary>
