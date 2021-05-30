@@ -78,7 +78,7 @@
             this.exitButton.TabIndex = 3;
             this.exitButton.Text = "Выход";
             this.exitButton.UseVisualStyleBackColor = true;
-            this.exitButton.Click += new System.EventHandler(this.exitButton_Click);
+            this.exitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
             // removeCalculationButton
             // 
@@ -88,7 +88,7 @@
             this.removeCalculationButton.TabIndex = 2;
             this.removeCalculationButton.Text = "Удалить";
             this.removeCalculationButton.UseVisualStyleBackColor = true;
-            this.removeCalculationButton.Click += new System.EventHandler(this.removeCalculationButton_Click);
+            this.removeCalculationButton.Click += new System.EventHandler(this.RemoveCalculationButton_Click);
             // 
             // addCalculationButton
             // 
@@ -98,7 +98,7 @@
             this.addCalculationButton.TabIndex = 1;
             this.addCalculationButton.Text = "Добавить";
             this.addCalculationButton.UseVisualStyleBackColor = true;
-            this.addCalculationButton.Click += new System.EventHandler(this.addCalculationButton_Click);
+            this.addCalculationButton.Click += new System.EventHandler(this.AddCalculationButton_Click);
             // 
             // openButton
             // 
@@ -108,7 +108,7 @@
             this.openButton.TabIndex = 4;
             this.openButton.Text = "Загрузить";
             this.openButton.UseVisualStyleBackColor = true;
-            this.openButton.Click += new System.EventHandler(this.openButton_Click);
+            this.openButton.Click += new System.EventHandler(this.OpenButton_Click);
             // 
             // saveButton
             // 
@@ -118,7 +118,7 @@
             this.saveButton.TabIndex = 5;
             this.saveButton.Text = "Сохранить";
             this.saveButton.UseVisualStyleBackColor = true;
-            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+            this.saveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // findButton
             // 
@@ -128,7 +128,7 @@
             this.findButton.TabIndex = 6;
             this.findButton.Text = "Поиск";
             this.findButton.UseVisualStyleBackColor = true;
-            this.findButton.Click += new System.EventHandler(this.findButton_Click);
+            this.findButton.Click += new System.EventHandler(this.FindButton_Click);
             // 
             // groupBox2
             // 
@@ -162,7 +162,7 @@
             this.discardButton.TabIndex = 8;
             this.discardButton.Text = "Сбросить";
             this.discardButton.UseVisualStyleBackColor = true;
-            this.discardButton.Click += new System.EventHandler(this.discardButton_Click);
+            this.discardButton.Click += new System.EventHandler(this.DiscardButton_Click);
             // 
             // CoordinateDeterminationForm
             // 

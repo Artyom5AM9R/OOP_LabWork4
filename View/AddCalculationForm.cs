@@ -37,7 +37,7 @@ namespace View
         /// <summary>
         /// Регулярное выражение для отбора правильных значений параметров движения
         /// </summary>
-        private Regex _correctValueRegex = new Regex(ServiceOptions.TmpParametrsValue);
+        private Regex _correctValueRegex = new Regex(ServiceOptions.TmpParametersValue);
 
         /// <summary>
         /// Регулярное выражение для отбора правильных значений параметра StartingPosition 
@@ -52,7 +52,7 @@ namespace View
         {
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            comboBox.SelectedIndexChanged += comboBox_SelectedIndexChanged;
+            comboBox.SelectedIndexChanged += СomboBox_SelectedIndexChanged;
             comboBox.Items.Add(_service.GetDescription(MotionType.UniformMotion));
             comboBox.Items.Add(_service.GetDescription(MotionType.AcceleratedMotion));
             comboBox.Items.Add(_service.GetDescription(MotionType.OscillatoryMotion));
@@ -65,7 +65,7 @@ namespace View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ComboBox_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        private void ComboBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             e.Handled = true;
         }
@@ -75,7 +75,7 @@ namespace View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void comboBox_SelectedIndexChanged(object sender, EventArgs e)
+        public void СomboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             MotionType tmp = MotionType.UniformMotion;
 
@@ -101,11 +101,8 @@ namespace View
             }
 
             timeTextBox.Text = null;
-            
-            for (int i = groupBox.Controls.Count - 1; i >= 2; i--)
-            {
-                groupBox.Controls.Remove(groupBox.Controls[i]);                
-            }
+
+            ControlsRemove();
 
             int coordinateY = 58;
             _fields = TmpMotion.GetType().GetProperties();
@@ -116,85 +113,125 @@ namespace View
                     node.Name != _service.GetDescription(MotionFieldsType.Coordinate))
                 {
                     var label = new Label();
-
-                    if (node.Name == _service.GetDescription(MotionFieldsType.Speed))
-                    {
-                        label.Text = "Скорость, м/с:";
-                    }
-                    else if (node.Name == _service.GetDescription(MotionFieldsType.Acceleration))
-                    {
-                        label.Text = "Ускорение, м/с^2:";
-                    }
-                    else if (node.Name == _service.GetDescription(MotionFieldsType.StartCoordinate))
-                    {
-                        label.Text = "Начальная координата, м:";
-                    }
-                    else if (node.Name == _service.GetDescription(MotionFieldsType.Amplitude))
-                    {
-                        label.Text = "Амплитуда отклонения, м:";
-                    }
-                    else if (node.Name == _service.GetDescription(MotionFieldsType.StartingPosition))
-                    {
-                        label.Text = "Начальное положение:";
-                    }
-                    else if (node.Name == _service.GetDescription(MotionFieldsType.InitialPhase))
-                    {
-                        label.Text = "Начальная фаза, град:";
-                    }
-                    else if (node.Name == _service.GetDescription(MotionFieldsType.CyclicFrequency))
-                    {
-                        label.Text = "Циклическая частота, рад/с:";
-                    }
-
-                    label.Name = $"{node.Name}Label";
-
-                    if (node.Name == _service.GetDescription(MotionFieldsType.StartingPosition))
-                    {
-                        label.Size = new Size(125, 18);
-                    }
-                    else
-                    {
-                        label.Size = new Size(155, 18);
-                    }
+                    CreateLabel(label, node, coordinateY);
                     
-                    label.Location = new Point(8, coordinateY);
-                    groupBox.Controls.Add(label);
-
                     var textBox = new TextBox();
-                    textBox.Name = $"{node.Name}TextBox";
-                    textBox.Size = new Size(46, 22);
-                    textBox.Location = new Point(168, coordinateY - 2);
-                    groupBox.Controls.Add(textBox);
-
-                    var errorProvider = new ErrorProvider();
-                    errorProvider.BlinkRate = 0;
-
-                    if (node.Name == _service.GetDescription(MotionFieldsType.StartingPosition))
-                    {
-                        var infoErrorProvider = new ErrorProvider();
-                        infoErrorProvider.BlinkRate = 0;
-                        infoErrorProvider.Icon = Properties.Resources.help;
-                        infoErrorProvider.SetError(label, "0 - положение равновесия, " +
-                            "1 - положение максимального отклонения.");
-
-                        TextBox_Validating(errorProvider, textBox);
-                    }
-                    else
-                    {
-                        TextBox_Validating(errorProvider, textBox);
-                    }
+                    CreateTextBox(textBox, label, node, coordinateY);
 
                     coordinateY = coordinateY + 35;
                 }
             }
+        }
 
+        /// <summary>
+        /// Метод для очистки groupBox от всех элементов управления, которые не связаны с 
+        /// параметром Time
+        /// </summary>
+        private void ControlsRemove()
+        {
+            for (int i = groupBox.Controls.Count - 1; i >= 2; i--)
+            {
+                groupBox.Controls.Remove(groupBox.Controls[i]);
+            }
+        }
+
+        /// <summary>
+        /// Метод для добавления в groupBox строковых записей в соответствии с 
+        /// указываемыми названиями параметров движения
+        /// </summary>
+        /// <param name="label">Строковая запись, текст которой нужно изменить</param>
+        /// <param name="field">Параметр движения, в соответсвии с которым нужно 
+        /// изметь текст строковой записи</param>
+        /// <param name="coordinate">Вертикальная координа начала размещения 
+        /// строковых записей в groupBox</param>
+        private void CreateLabel (Label label, MemberInfo field, int coordinate)
+        {
+            if (field.Name == _service.GetDescription(MotionFieldsType.Speed))
+            {
+                label.Text = "Скорость, м/с:";
+            }
+            else if (field.Name == _service.GetDescription(MotionFieldsType.Acceleration))
+            {
+                label.Text = "Ускорение, м/с^2:";
+            }
+            else if (field.Name == _service.GetDescription(MotionFieldsType.StartCoordinate))
+            {
+                label.Text = "Начальная координата, м:";
+            }
+            else if (field.Name == _service.GetDescription(MotionFieldsType.Amplitude))
+            {
+                label.Text = "Амплитуда отклонения, м:";
+            }
+            else if (field.Name == _service.GetDescription(MotionFieldsType.StartingPosition))
+            {
+                label.Text = "Начальное положение:";
+            }
+            else if (field.Name == _service.GetDescription(MotionFieldsType.InitialPhase))
+            {
+                label.Text = "Начальная фаза, град:";
+            }
+            else if (field.Name == _service.GetDescription(MotionFieldsType.CyclicFrequency))
+            {
+                label.Text = "Циклическая частота, рад/с:";
+            }
+
+            label.Name = $"{field.Name}Label";
+
+            if (field.Name == _service.GetDescription(MotionFieldsType.StartingPosition))
+            {
+                label.Size = new Size(125, 18);
+            }
+            else
+            {
+                label.Size = new Size(155, 18);
+            }
+
+            label.Location = new Point(8, coordinate);
+            groupBox.Controls.Add(label);
+        }
+
+        /// <summary>
+        /// Метод для добавления окон для ввода значений параметров движения и 
+        /// добавления к ним указателей правильности ввода (errorProvider)
+        /// </summary>
+        /// <param name="textBox">Добавляемое окно ввода значения параметра</param>
+        /// <param name="label">Строковая запись для параметра StartingPosition</param>
+        /// <param name="field">Параметр движения, для которого добавляется окно ввода</param>
+        /// <param name="coordinate">Вертикальная координа начала размещения 
+        /// строковых записей в groupBox</param>
+        private void CreateTextBox(TextBox textBox, Label label, MemberInfo field, int coordinate)
+        {
+            textBox.Name = $"{field.Name}TextBox";
+            textBox.Size = new Size(46, 22);
+            textBox.Location = new Point(168, coordinate - 2);
+            groupBox.Controls.Add(textBox);
+
+            var errorProvider = new ErrorProvider();
+            errorProvider.BlinkRate = 0;
+
+            if (field.Name == _service.GetDescription(MotionFieldsType.StartingPosition))
+            {
+                var infoErrorProvider = new ErrorProvider();
+                infoErrorProvider.BlinkRate = 0;
+                infoErrorProvider.Icon = Properties.Resources.help;
+                infoErrorProvider.SetError(label, "0 - положение равновесия, " +
+                    "1 - положение максимального отклонения.");
+
+                TextBox_Validating(errorProvider, textBox);
+            }
+            else
+            {
+                TextBox_Validating(errorProvider, textBox);
+            }
         }
 
         /// <summary>
         /// Метод для проверки правильности информации, введенной в textBox
         /// </summary>
-        /// <param name="errorProvider"></param>
-        /// <param name="control"></param>
+        /// <param name="errorProvider">Указатель правильности ввода для сигнализации 
+        /// об ошибке</param>
+        /// <param name="control">Элемент управления, к которому должен относиться 
+        /// указатель правильности ввода</param>
         private void TextBox_Validating(ErrorProvider errorProvider, Control ctrl)
         {
             ctrl.Validating += Validation;
@@ -264,41 +301,7 @@ namespace View
                     }
                 }
 
-                var valueList = new List<string>();
-
-                foreach (Control ctrl in groupBox.Controls)
-                {                    
-                    if (ctrl.GetType() == typeof(TextBox))
-                    {
-                        if (ctrl.Text.Contains("."))
-                        {
-                            ctrl.Text = ctrl.Text.Replace(".", ",");
-                        }
-
-                        valueList.Add(ctrl.Text);
-                    }
-                }
-
-                switch (TmpMotion)
-                {
-                    case UniformMotion motion:
-                        motion.Time = double.Parse(valueList[0]);
-                        motion.Speed = double.Parse(valueList[1]);
-                        break;
-                    case AcceleratedMotion motion:
-                        motion.Time = double.Parse(valueList[0]);
-                        motion.Speed = double.Parse(valueList[1]);
-                        motion.StartCoordinate = double.Parse(valueList[2]);
-                        motion.Acceleration = double.Parse(valueList[3]);
-                        break;
-                    case OscillatoryMotion motion:
-                        motion.Time = double.Parse(valueList[0]);
-                        motion.Amplitude = double.Parse(valueList[1]);
-                        motion.StartingPosition = (StartingPositionType)int.Parse(valueList[2]);
-                        motion.CyclicFrequency = double.Parse(valueList[3]);
-                        motion.InitialPhase = double.Parse(valueList[4]);
-                        break;
-                }
+                AddMotionParamentersValue();
 
                 Close();
             }
@@ -310,6 +313,51 @@ namespace View
         }
 
         /// <summary>
+        /// Метод для считывания значений из окон ввода и их присвоения параметрам движения
+        /// </summary>
+        /// <remarks>
+        /// Присутствует замена точек на запятые в считываемых значениях
+        /// </remarks>
+        private void AddMotionParamentersValue()
+        {
+            var valueList = new List<string>();
+
+            foreach (Control ctrl in groupBox.Controls)
+            {
+                if (ctrl.GetType() == typeof(TextBox))
+                {
+                    if (ctrl.Text.Contains("."))
+                    {
+                        ctrl.Text = ctrl.Text.Replace(".", ",");
+                    }
+
+                    valueList.Add(ctrl.Text);
+                }
+            }
+
+            switch (TmpMotion)
+            {
+                case UniformMotion motion:
+                    motion.Time = double.Parse(valueList[0]);
+                    motion.Speed = double.Parse(valueList[1]);
+                    break;
+                case AcceleratedMotion motion:
+                    motion.Time = double.Parse(valueList[0]);
+                    motion.Speed = double.Parse(valueList[1]);
+                    motion.StartCoordinate = double.Parse(valueList[2]);
+                    motion.Acceleration = double.Parse(valueList[3]);
+                    break;
+                case OscillatoryMotion motion:
+                    motion.Time = double.Parse(valueList[0]);
+                    motion.Amplitude = double.Parse(valueList[1]);
+                    motion.StartingPosition = (StartingPositionType)int.Parse(valueList[2]);
+                    motion.CyclicFrequency = double.Parse(valueList[3]);
+                    motion.InitialPhase = double.Parse(valueList[4]);
+                    break;
+            }
+        }
+
+        /// <summary>
         /// Действие при нажатии кнопки "Назад"
         /// </summary>
         /// <param name="sender"></param>
@@ -317,6 +365,50 @@ namespace View
         private void CancelButton_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        /// <summary>
+        /// Действия при нажатии кнопки "Случайное заполнение"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateRandomDataButton_Click(object sender, EventArgs e)
+        {
+            foreach (Control ctrl in groupBox.Controls)
+            {
+                if (ctrl.GetType() == typeof(TextBox))
+                {
+                    ctrl.Text = null;
+                }
+            }
+            
+            Random rand = new Random();
+            int choice = rand.Next(0, comboBox.Items.Count);
+
+            comboBox.Text = comboBox.Items[choice].ToString();
+
+            foreach (Control ctrl in groupBox.Controls)
+            {
+                if (ctrl.GetType() == typeof(TextBox))
+                {
+                    if (ctrl.Name.Contains(_service.GetDescription(MotionFieldsType.
+                        StartingPosition)))
+                    {
+                        ctrl.Text = rand.Next(0, 
+                            Enum.GetNames(typeof(StartingPositionType)).Length).ToString();
+                    }
+                    else if (ctrl.Name.Contains(_service.GetDescription(MotionFieldsType.
+                        InitialPhase)))
+                    {
+                        ctrl.Text = rand.Next(-(OscillatoryMotion.MaxPhase - 1), 
+                            OscillatoryMotion.MaxPhase).ToString();
+                    }
+                    else
+                    {
+                        ctrl.Text = rand.Next(1, 501).ToString();
+                    }
+                } 
+            }
         }
     }
 }

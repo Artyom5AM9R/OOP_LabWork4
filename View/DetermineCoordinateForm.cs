@@ -40,7 +40,7 @@ namespace View
         /// </summary>
         /// <param name="sender">Ссылка на элемент управления, вызвавший событие</param>
         /// <param name="e">Данные о событии</param>
-        private void addCalculationButton_Click(object sender, EventArgs e)
+        private void AddCalculationButton_Click(object sender, EventArgs e)
         {
             AddCalculationForm form = new AddCalculationForm();
             form.FormClosed += form_FormClosed;
@@ -69,8 +69,14 @@ namespace View
             dataGridView.Columns[0].Width = 30;
             dataGridView.Columns.Add("Type", "Тип движения");
             dataGridView.Columns[1].Width = 105;
+
             dataGridView.DataSource = new List<MotionBase>(list);
-            dataGridView.SelectedRows[0].Selected = false;
+
+            if (dataGridView.Rows.Count != 0)
+            {
+                dataGridView.SelectedRows[0].Selected = false;
+            }
+
             dataGridView.RowHeadersVisible = false;
             dataGridView.Columns[2].HeaderText = "Координата";
             dataGridView.Columns[3].HeaderText = "Время";
@@ -112,7 +118,7 @@ namespace View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void exitButton_Click(object sender, EventArgs e)
+        private void ExitButton_Click(object sender, EventArgs e)
         {
             Close();
         }
@@ -122,7 +128,7 @@ namespace View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void findButton_Click(object sender, EventArgs e)
+        private void FindButton_Click(object sender, EventArgs e)
         {
             if (dataGridView.RowCount == 0)
             {
@@ -143,10 +149,25 @@ namespace View
                     {
                         foreach (MotionBase node in _motionList)
                         {
-                            if (Math.Round(node.Coordinate, 4) == form.Coordinate &&
-                                node.Time == form.Time)
+                            switch (form.Time)
                             {
-                                findResultList.Add(node);
+                                case 0:
+                                    if (Math.Round(node.Coordinate, 4) == form.Coordinate)
+                                    {
+                                        findResultList.Add(node);
+                                    }
+                                    break;
+                                default:
+                                    if (node.Time == form.Time)
+                                    {
+                                        findResultList.Add(node);
+                                    }
+                                    else if (Math.Round(node.Coordinate, 4) == form.Coordinate &&
+                                        node.Time == form.Time)
+                                    {
+                                        findResultList.Add(node);
+                                    }
+                                    break;
                             }
                         }
 
@@ -156,9 +177,8 @@ namespace View
                         }
                         else
                         {
-                            MessageBox.Show("Расчет с указанными параметрами " +
-                                "отсутствует. Уточните параметры поиска.", 
-                                "Уведомление");
+                            MessageBox.Show("Расчет с указанными параметрами отсутствует. " +
+                                "Уточните параметры поиска.", "Уведомление");
                         }
                     }
                 }
@@ -170,7 +190,7 @@ namespace View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void openButton_Click(object sender, EventArgs e)
+        private void OpenButton_Click(object sender, EventArgs e)
         {
             if (openFileDialog.ShowDialog() == DialogResult.Cancel)
             {
@@ -193,7 +213,7 @@ namespace View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void discardButton_Click(object sender, EventArgs e)
+        private void DiscardButton_Click(object sender, EventArgs e)
         {
             RefreshOfDataGridView(_motionList);
         }
@@ -203,7 +223,7 @@ namespace View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void saveButton_Click(object sender, EventArgs e)
+        private void SaveButton_Click(object sender, EventArgs e)
         {
             if (saveFileDialog.ShowDialog() == DialogResult.Cancel)
             {
@@ -223,7 +243,7 @@ namespace View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void removeCalculationButton_Click(object sender, EventArgs e)
+        private void RemoveCalculationButton_Click(object sender, EventArgs e)
         {
             var listForDelete = new List<MotionBase>();
 
@@ -249,8 +269,8 @@ namespace View
                         foreach (MotionBase motion in _motionList)
                         {
                             if (type == motion.GetType().ToString() &&
-                                double.Parse(line.Cells[2].Value.ToString()) == motion.Coordinate &&
-                                double.Parse(line.Cells[3].Value.ToString()) == motion.Time)
+                                line.Cells[2].Value.ToString() == motion.Coordinate.ToString() &&
+                                line.Cells[3].Value.ToString() == motion.Time.ToString())
                             {
                                 listForDelete.Add(motion);
                             }

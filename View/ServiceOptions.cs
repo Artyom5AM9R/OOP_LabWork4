@@ -22,7 +22,7 @@ namespace View
         /// Не является корректным для параметра StartingPosition из 
         /// класса OscillatoryMotion
         /// </remarks>
-        public const string TmpParametrsValue = @"(^(-)?([0-9]+)(\,|\.)?([0-9])+$)|" +
+        public const string TmpParametersValue = @"(^(-)?([0-9]+)(\,|\.)?([0-9])+$)|" +
             @"(^(-)?([0-9])+$)";
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace View
         /// Метод для получения названия типа объекта из пространства имен Model по его 
         /// описанию из MotionType
         /// </summary>
-        /// <param name="description"></param>
+        /// <param name="description">Описание элемента из перечисления MotionType</param>
         /// <returns>Название типа</returns>
         public string GetEnumElementName(string description)
         {
