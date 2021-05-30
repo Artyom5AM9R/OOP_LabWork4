@@ -35,7 +35,6 @@
             this.choiceLabel = new System.Windows.Forms.Label();
             this.timeLabel = new System.Windows.Forms.Label();
             this.timeTextBox = new System.Windows.Forms.TextBox();
-            this.CreateRandomDataButton = new System.Windows.Forms.Button();
             this.groupBox = new System.Windows.Forms.GroupBox();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.groupBox.SuspendLayout();
@@ -45,7 +44,7 @@
             // OkButton
             // 
             this.OkButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.OkButton.Location = new System.Drawing.Point(216, 343);
+            this.OkButton.Location = new System.Drawing.Point(216, 300);
             this.OkButton.Name = "OkButton";
             this.OkButton.Size = new System.Drawing.Size(80, 30);
             this.OkButton.TabIndex = 0;
@@ -56,7 +55,7 @@
             // CancelButton
             // 
             this.CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CancelButton.Location = new System.Drawing.Point(116, 343);
+            this.CancelButton.Location = new System.Drawing.Point(116, 300);
             this.CancelButton.Name = "CancelButton";
             this.CancelButton.Size = new System.Drawing.Size(80, 30);
             this.CancelButton.TabIndex = 1;
@@ -71,7 +70,6 @@
             this.comboBox.Name = "comboBox";
             this.comboBox.Size = new System.Drawing.Size(160, 24);
             this.comboBox.TabIndex = 2;
-            this.comboBox.KeyPress += ComboBox_KeyPress;
             // 
             // choiceLabel
             // 
@@ -99,16 +97,6 @@
             this.timeTextBox.Size = new System.Drawing.Size(60, 22);
             this.timeTextBox.TabIndex = 5;
             // 
-            // CreateRandomDataButton
-            // 
-            this.CreateRandomDataButton.Location = new System.Drawing.Point(116, 300);
-            this.CreateRandomDataButton.Name = "CreateRandomDataButton";
-            this.CreateRandomDataButton.Size = new System.Drawing.Size(180, 30);
-            this.CreateRandomDataButton.TabIndex = 6;
-            this.CreateRandomDataButton.Text = "Случайные параметры";
-            this.CreateRandomDataButton.UseVisualStyleBackColor = true;
-            this.CreateRandomDataButton.Click += new System.EventHandler(this.CreateRandomDataButton_Click);
-            // 
             // groupBox
             // 
             this.groupBox.Controls.Add(this.timeLabel);
@@ -130,9 +118,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(334, 385);
+            this.ClientSize = new System.Drawing.Size(334, 337);
             this.Controls.Add(this.groupBox);
-            this.Controls.Add(this.CreateRandomDataButton);
             this.Controls.Add(this.choiceLabel);
             this.Controls.Add(this.comboBox);
             this.Controls.Add(this.CancelButton);
@@ -155,7 +142,6 @@
         private System.Windows.Forms.Label choiceLabel;
         private System.Windows.Forms.Label timeLabel;
         private System.Windows.Forms.TextBox timeTextBox;
-        private System.Windows.Forms.Button CreateRandomDataButton;
         private System.Windows.Forms.GroupBox groupBox;
         private System.Windows.Forms.ErrorProvider errorProvider1;
     }

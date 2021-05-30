@@ -318,49 +318,5 @@ namespace View
         {
             Close();
         }
-
-        /// <summary>
-        /// Действия при нажатии кнопки "Случайное заполнение"
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CreateRandomDataButton_Click(object sender, EventArgs e)
-        {
-            foreach (Control ctrl in groupBox.Controls)
-            {
-                if (ctrl.GetType() == typeof(TextBox))
-                {
-                    ctrl.Text = null;
-                }
-            }
-            
-            Random rand = new Random();
-            int choice = rand.Next(0, comboBox.Items.Count);
-
-            comboBox.Text = comboBox.Items[choice].ToString();
-
-            foreach (Control ctrl in groupBox.Controls)
-            {
-                if (ctrl.GetType() == typeof(TextBox))
-                {
-                    if (ctrl.Name.Contains(_service.GetDescription(MotionFieldsType.
-                        StartingPosition)))
-                    {
-                        ctrl.Text = rand.Next(0, 
-                            Enum.GetNames(typeof(StartingPositionType)).Length).ToString();
-                    }
-                    else if (ctrl.Name.Contains(_service.GetDescription(MotionFieldsType.
-                        InitialPhase)))
-                    {
-                        ctrl.Text = rand.Next(-(OscillatoryMotion.MaxPhase - 1), 
-                            OscillatoryMotion.MaxPhase).ToString();
-                    }
-                    else
-                    {
-                        ctrl.Text = rand.Next(1, 501).ToString();
-                    }
-                } 
-            }
-        }
     }
 }
