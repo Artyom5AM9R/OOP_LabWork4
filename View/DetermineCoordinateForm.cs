@@ -30,8 +30,11 @@ namespace View
         {
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            //TODO: масштабирование формы +++
+            MaximizeBox = false;
             openFileDialog.Filter = "Specific files(*.mtn) | *.mtn";
             saveFileDialog.Filter = "Specific files(*.mtn) | *.mtn";
+            //TODO: сделать выделение цельным для всей строки, а не только для ячейки +++
             dataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         }
 
@@ -86,8 +89,8 @@ namespace View
                 line.Cells[0].Value = line.Index + 1;
 
                 var service = new ServiceOptions();
-
-                switch(list[line.Index].GetType().Name)
+                //TODO: добавить информацию о типе движения +++
+                switch (list[line.Index].GetType().Name)
                 {
                     case nameof(MotionType.UniformMotion):
                         line.Cells[1].Value = service.GetDescription(MotionType.
@@ -149,6 +152,7 @@ namespace View
                     {
                         foreach (MotionBase node in _motionList)
                         {
+                            //TODO: сделать поиск по каждому из параметров в отдельности +++
                             switch (form.Time)
                             {
                                 case 0:
@@ -260,7 +264,7 @@ namespace View
             else
             {
                 var _service = new ServiceOptions();
-
+                //TODO: убрать форму для удаления, сделать удаление через выделение строк в dataGridView +++
                 foreach (DataGridViewRow line in dataGridView.Rows)
                 {
                     if (line.Selected)

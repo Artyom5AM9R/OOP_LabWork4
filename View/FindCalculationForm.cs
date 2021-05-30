@@ -34,6 +34,8 @@ namespace View
         {
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
+            //TODO: масштабирование формы +++
         }
 
         /// <summary>

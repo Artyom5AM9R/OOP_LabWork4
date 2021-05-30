@@ -52,6 +52,8 @@ namespace View
         {
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            //TODO: масштабирование формы +++
+            MaximizeBox = false;
             comboBox.SelectedIndexChanged += СomboBox_SelectedIndexChanged;
             comboBox.Items.Add(_service.GetDescription(MotionType.UniformMotion));
             comboBox.Items.Add(_service.GetDescription(MotionType.AcceleratedMotion));
@@ -67,6 +69,7 @@ namespace View
         /// <param name="e"></param>
         private void ComboBox_KeyPress(object sender, KeyPressEventArgs e)
         {
+            //TODO: сделать comboBox только ReadOnly +++
             e.Handled = true;
         }
 
@@ -106,7 +109,7 @@ namespace View
 
             int coordinateY = 58;
             _fields = TmpMotion.GetType().GetProperties();
-
+            //TODO: декомпозировать на более мелкие методы +++
             foreach (PropertyInfo node in _fields)
             {
                 if (node.Name != _service.GetDescription(MotionFieldsType.Time) && 
@@ -213,6 +216,7 @@ namespace View
             {
                 var infoErrorProvider = new ErrorProvider();
                 infoErrorProvider.BlinkRate = 0;
+                //TODO: изменить значок с предупреждения на информирование +++
                 infoErrorProvider.Icon = Properties.Resources.help;
                 infoErrorProvider.SetError(label, "0 - положение равновесия, " +
                     "1 - положение максимального отклонения.");
@@ -281,7 +285,7 @@ namespace View
                 {
                     throw new Exception("Тип движения не выбран!");
                 }
-
+                
                 foreach (Control ctrl in groupBox.Controls)
                 {
                     if (ctrl.GetType() == typeof(TextBox))
@@ -300,7 +304,7 @@ namespace View
                         }
                     }
                 }
-
+                //TODO: декомпозировать на более мелкие методы +++
                 AddMotionParamentersValue();
 
                 Close();
@@ -367,6 +371,7 @@ namespace View
             Close();
         }
 
+        //TODO: сделать версию Release и убрать оттуда эту функцию вместе с кнопкой на форме +++
         /// <summary>
         /// Действия при нажатии кнопки "Случайное заполнение"
         /// </summary>
