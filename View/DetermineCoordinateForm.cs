@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -31,6 +32,7 @@ namespace View
             FormBorderStyle = FormBorderStyle.FixedSingle;
             openFileDialog.Filter = "Specific files(*.mtn) | *.mtn";
             saveFileDialog.Filter = "Specific files(*.mtn) | *.mtn";
+            dataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         }
 
         /// <summary>
@@ -55,7 +57,8 @@ namespace View
         }
 
         /// <summary>
-        /// Метод, присваивающий источник данных для DataGridView и обновляющий его содержание
+        /// Метод, присваивающий источник данных для DataGridView и обновляющий 
+        /// его содержание
         /// </summary>
         /// <param name="list">Список для вывода на экран</param>
         private void RefreshOfDataGridView(List<MotionBase> list)
@@ -64,23 +67,42 @@ namespace View
             dataGridView.Columns.Clear();
             dataGridView.Columns.Add("Number", "№");
             dataGridView.Columns[0].Width = 30;
+            dataGridView.Columns.Add("Type", "Тип движения");
+            dataGridView.Columns[1].Width = 105;
             dataGridView.DataSource = new List<MotionBase>(list);
+            dataGridView.SelectedRows[0].Selected = false;
             dataGridView.RowHeadersVisible = false;
-            dataGridView.Columns[1].HeaderText = "Координата";
-            dataGridView.Columns[2].HeaderText = "Время";
-            int counter = 1;
+            dataGridView.Columns[2].HeaderText = "Координата";
+            dataGridView.Columns[3].HeaderText = "Время";
 
             foreach (DataGridViewRow line in dataGridView.Rows)
             {
-                line.Cells[0].Value = counter;
-                counter++;
+                line.Cells[0].Value = line.Index + 1;
 
-                double fullValue = double.Parse(line.Cells[1].Value.ToString());
+                var service = new ServiceOptions();
+
+                switch(list[line.Index].GetType().Name)
+                {
+                    case nameof(MotionType.UniformMotion):
+                        line.Cells[1].Value = service.GetDescription(MotionType.
+                            UniformMotion);
+                        break;
+                    case nameof(MotionType.AcceleratedMotion):
+                        line.Cells[1].Value = service.GetDescription(MotionType.
+                            AcceleratedMotion);
+                        break;
+                    case nameof(MotionType.OscillatoryMotion):
+                        line.Cells[1].Value = service.GetDescription(MotionType.
+                            OscillatoryMotion);
+                        break;
+                }
+
+                double fullValue = double.Parse(line.Cells[2].Value.ToString());
                 int integerVulue = (int)fullValue;
 
                 if ((fullValue - integerVulue).ToString().Length > 6)
                 {
-                    line.Cells[1].Style.Format = "0.0000";
+                    line.Cells[2].Style.Format = "0.0000";
                 }
             }
         }
@@ -134,8 +156,9 @@ namespace View
                         }
                         else
                         {
-                            MessageBox.Show("Расчет с указанными параметрами отсутствует. " +
-                                "Уточните параметры поиска.", "Уведомление");
+                            MessageBox.Show("Расчет с указанными параметрами " +
+                                "отсутствует. Уточните параметры поиска.", 
+                                "Уведомление");
                         }
                     }
                 }
@@ -158,7 +181,8 @@ namespace View
 
             using (var file = System.IO.File.OpenRead(openFileDialog.FileName))
             {
-                _motionList = new List<MotionBase>((IEnumerable<MotionBase>)reader.Deserialize(file));
+                _motionList = new List<MotionBase>((IEnumerable<MotionBase>)reader.
+                    Deserialize(file));
             }
 
             RefreshOfDataGridView(_motionList);
@@ -201,38 +225,45 @@ namespace View
         /// <param name="e"></param>
         private void removeCalculationButton_Click(object sender, EventArgs e)
         {
+            var listForDelete = new List<MotionBase>();
+
             if (dataGridView.RowCount == 0)
             {
-                MessageBox.Show("Удаление не возможно, расчеты отсутсвуют.", "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Удаление не возможно, расчеты отсутсвуют.", 
+                    "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else if (dataGridView.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Удаление не возможно, нет выделенных строк.", 
+                    "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
-                //Обновление dataGridView перед удалением на тот случай, если отображались
-                //только результаты поиска
-                //
-                discardButton_Click(sender, e);
+                var _service = new ServiceOptions();
 
-                var form = new DeleteCalculationForm();
-                form.FormClosed += form_FormClosed;
-                form.Show();
-
-                void form_FormClosed(object senderForm, FormClosedEventArgs f)
+                foreach (DataGridViewRow line in dataGridView.Rows)
                 {
-                    if (form.DialogResult == DialogResult.OK && form.DeleteNumber != 0)
+                    if (line.Selected)
                     {
-                        if (_motionList.Count >= form.DeleteNumber && _motionList.Count != 0)
+                        string type = _service.GetEnumElementName(line.Cells[1].Value.ToString());
+                        foreach (MotionBase motion in _motionList)
                         {
-                            _motionList.RemoveAt(form.DeleteNumber - 1);
-                            RefreshOfDataGridView(_motionList);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Удаление невозможно. Расчет с указанным номером отсутствует.",
-                                "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            if (type == motion.GetType().ToString() &&
+                                double.Parse(line.Cells[2].Value.ToString()) == motion.Coordinate &&
+                                double.Parse(line.Cells[3].Value.ToString()) == motion.Time)
+                            {
+                                listForDelete.Add(motion);
+                            }
                         }
                     }
                 }
+
+                foreach (MotionBase node in listForDelete)
+                {
+                    _motionList.Remove(node);
+                }
+
+                RefreshOfDataGridView(_motionList);
             }
         }
     }

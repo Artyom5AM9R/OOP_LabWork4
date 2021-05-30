@@ -49,9 +49,7 @@ namespace Model
         /// <returns>Значение типа double</returns>
         protected override double CalculateCoordinate()
         {
-            double coordinate = Speed * Time;
-
-            return coordinate;
+            return Speed * Time;
         }
     }
 }

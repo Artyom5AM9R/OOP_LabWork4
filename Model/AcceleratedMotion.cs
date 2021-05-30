@@ -32,7 +32,6 @@ namespace Model
             }
             set
             {
-                //TODO: const +++
                 if (value > 0 && value <= UniformMotion.MaxSpeed)
                 {
                     _speed = value;
@@ -80,9 +79,7 @@ namespace Model
         /// <returns>Значение типа double</returns>
         protected override double CalculateCoordinate()
         {
-            double coordinate = StartCoordinate + Speed * Time + Acceleration * Math.Pow(Time, 2) / 2;
-
-            return coordinate;
+            return StartCoordinate + Speed * Time + Acceleration * Math.Pow(Time, 2) / 2;
         }
     }
 }

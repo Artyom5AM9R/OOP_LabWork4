@@ -12,14 +12,31 @@ namespace View
     /// </summary>
     public enum MotionFieldsType
     {
-        [Description("Time")] Time,
-        [Description("Coordinate")] Coordinate,
-        [Description("Speed")] Speed,
-        [Description("Acceleration")] Acceleration,
-        [Description("StartCoordinate")] StartCoordinate,
-        [Description("Amplitude")] Amplitude,
-        [Description("StartingPosition")] StartingPosition,
-        [Description("InitialPhase")] InitialPhase,
-        [Description("CyclicFrequency")] CyclicFrequency
+        [Description("Time")] 
+        Time,
+
+        [Description("Coordinate")] 
+        Coordinate,
+
+        [Description("Speed")] 
+        Speed,
+
+        [Description("Acceleration")] 
+        Acceleration,
+
+        [Description("StartCoordinate")] 
+        StartCoordinate,
+
+        [Description("Amplitude")] 
+        Amplitude,
+
+        [Description("StartingPosition")] 
+        StartingPosition,
+
+        [Description("InitialPhase")] 
+        InitialPhase,
+
+        [Description("CyclicFrequency")] 
+        CyclicFrequency
     }
 }

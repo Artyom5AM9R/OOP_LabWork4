@@ -20,12 +20,12 @@ namespace View
         /// <summary>
         /// Координата тела для поиска расчета
         /// </summary>
-        public double Coordinate;
+        public double Coordinate { get; private set; }
 
         /// <summary>
         /// Время движения тела для поиска расчета
         /// </summary>
-        public double Time;
+        public double Time { get; private set; }
 
         /// <summary>
         ///Действие при открытии формы
@@ -44,8 +44,8 @@ namespace View
         private void okButton_Click(object sender, EventArgs e)
         {
             try
-            {                
-                Regex correctValueRegex = new Regex(@"(^(-)?([0-9]+)(\,|\.)?([0-9])+$)|(^(-)?([0-9])+$)");
+            {
+                Regex correctValueRegex = new Regex(ServiceOptions.TmpParametrsValue);
 
                 if (correctValueRegex.IsMatch(coordinateTextBox.Text) &&
                     correctValueRegex.IsMatch(timeTextBox.Text))

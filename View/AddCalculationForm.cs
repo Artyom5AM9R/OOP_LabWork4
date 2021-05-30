@@ -22,7 +22,7 @@ namespace View
         /// Экземляр класса MotionBase, выступающий в качестве шаблона при создании 
         /// объектов данного класса
         /// </summary>
-        public MotionBase TmpMotion;
+        public MotionBase TmpMotion { get; private set; }
 
         /// <summary>
         /// Список полей объекта класса MotionBase
@@ -30,39 +30,20 @@ namespace View
         private PropertyInfo[] _fields;
 
         /// <summary>
-        /// Регулярное выражение для отбора правильных вариантов заполнения всех textBox, 
-        /// кроме startingPositionTextBox
+        /// Экземляр класса ServiceOptions для доступа к служебным полям и методам
         /// </summary>
-        private Regex _correctValueRegex = new Regex(@"(^(-)?([0-9]+)(\,|\.)?([0-9])+$)|(^(-)?([0-9])+$)");
+        private ServiceOptions _service = new ServiceOptions();
 
         /// <summary>
-        /// Регулярное выражение для отбора правильных вариантов заполнения startingPositionTextBox 
+        /// Регулярное выражение для отбора правильных значений параметров движения
         /// </summary>
-        private Regex _startingPositionRegex = new Regex(@"^[0-1]{1,1}$");
+        private Regex _correctValueRegex = new Regex(ServiceOptions.TmpParametrsValue);
 
         /// <summary>
-        /// Приведение значения перечисления в удобочитаемый формат.
+        /// Регулярное выражение для отбора правильных значений параметра StartingPosition 
+        /// из класса OscillatoryMotion
         /// </summary>
-        /// <param name="enumElement">Элемент перечисления</param>
-        /// <returns>Название элемента</returns>
-        static string GetDescription(Enum enumElement)
-        {
-            Type type = enumElement.GetType();
-
-            MemberInfo[] memInfo = type.GetMember(enumElement.ToString());
-
-            if (memInfo != null && memInfo.Length > 0)
-            {
-                object[] attrs = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
-
-                if (attrs != null && attrs.Length > 0)
-                {
-                    return ((DescriptionAttribute)attrs[0]).Description;
-                }
-            }
-
-            return enumElement.ToString();
-        }
+        private Regex _startingPositionRegex = new Regex(ServiceOptions.TmpStartingPositionValue);
 
         /// <summary>
         /// Действия, выполняемые при открытии формы
@@ -72,13 +53,23 @@ namespace View
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedSingle;
             comboBox.SelectedIndexChanged += comboBox_SelectedIndexChanged;
-            comboBox.Items.Add(GetDescription(MotionType.UniformMotion));
-            comboBox.Items.Add(GetDescription(MotionType.AcceleratedMotion));
-            comboBox.Items.Add(GetDescription(MotionType.OscillatoryMotion));
+            comboBox.Items.Add(_service.GetDescription(MotionType.UniformMotion));
+            comboBox.Items.Add(_service.GetDescription(MotionType.AcceleratedMotion));
+            comboBox.Items.Add(_service.GetDescription(MotionType.OscillatoryMotion));
 
             TextBox_Validating(errorProvider1, timeTextBox);
-        } 
-        
+        }
+
+        /// <summary>
+        /// Метод для запрета ввода в comboBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ComboBox_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+            e.Handled = true;
+        }
+
         /// <summary>
         /// Действия после выбора значения в comboBox
         /// </summary>
@@ -90,7 +81,7 @@ namespace View
 
             foreach (MotionType field in Enum.GetValues(typeof(MotionType)))
             {
-                if (GetDescription(field) == comboBox.Text)
+                if (_service.GetDescription(field) == comboBox.Text)
                 {
                     tmp = field;
                 }
@@ -121,68 +112,43 @@ namespace View
 
             foreach (PropertyInfo node in _fields)
             {
-                if (node.Name != GetDescription(MotionFieldsType.Time) && 
-                    node.Name != GetDescription(MotionFieldsType.Coordinate))
+                if (node.Name != _service.GetDescription(MotionFieldsType.Time) && 
+                    node.Name != _service.GetDescription(MotionFieldsType.Coordinate))
                 {
                     var label = new Label();
 
-                    if (node.Name == GetDescription(MotionFieldsType.Speed))
+                    if (node.Name == _service.GetDescription(MotionFieldsType.Speed))
                     {
                         label.Text = "Скорость, м/с:";
                     }
-                    else if (node.Name == GetDescription(MotionFieldsType.Acceleration))
+                    else if (node.Name == _service.GetDescription(MotionFieldsType.Acceleration))
                     {
                         label.Text = "Ускорение, м/с^2:";
                     }
-                    else if (node.Name == GetDescription(MotionFieldsType.StartCoordinate))
+                    else if (node.Name == _service.GetDescription(MotionFieldsType.StartCoordinate))
                     {
                         label.Text = "Начальная координата, м:";
                     }
-                    else if (node.Name == GetDescription(MotionFieldsType.Amplitude))
+                    else if (node.Name == _service.GetDescription(MotionFieldsType.Amplitude))
                     {
                         label.Text = "Амплитуда отклонения, м:";
                     }
-                    else if (node.Name == GetDescription(MotionFieldsType.StartingPosition))
+                    else if (node.Name == _service.GetDescription(MotionFieldsType.StartingPosition))
                     {
                         label.Text = "Начальное положение:";
                     }
-                    else if (node.Name == GetDescription(MotionFieldsType.InitialPhase))
+                    else if (node.Name == _service.GetDescription(MotionFieldsType.InitialPhase))
                     {
                         label.Text = "Начальная фаза, град:";
                     }
-                    else if (node.Name == GetDescription(MotionFieldsType.CyclicFrequency))
+                    else if (node.Name == _service.GetDescription(MotionFieldsType.CyclicFrequency))
                     {
                         label.Text = "Циклическая частота, рад/с:";
                     }
 
-                    /*switch (node.Name)
-                    {
-                        case "Speed" :
-                            label.Text = "Скорость, м/с:";
-                            break;
-                        case "Acceleration":
-                            label.Text = "Ускорение, м/с^2:";
-                            break;
-                        case "StartCoordinate":
-                            label.Text = "Начальная координата, м:";
-                            break;
-                        case "Amplitude":
-                            label.Text = "Амплитуда отклонения, м:";
-                            break;
-                        case "StartingPosition":
-                            label.Text = "Начальное положение:";
-                            break;
-                        case "InitialPhase":
-                            label.Text = "Начальная фаза, град:";
-                            break;
-                        case "CyclicFrequency":
-                            label.Text = "Циклическая частота, рад/с:";
-                            break;
-                    }*/
-
                     label.Name = $"{node.Name}Label";
 
-                    if (node.Name == GetDescription(MotionFieldsType.StartingPosition))
+                    if (node.Name == _service.GetDescription(MotionFieldsType.StartingPosition))
                     {
                         label.Size = new Size(125, 18);
                     }
@@ -203,10 +169,15 @@ namespace View
                     var errorProvider = new ErrorProvider();
                     errorProvider.BlinkRate = 0;
 
-                    if (node.Name == GetDescription(MotionFieldsType.StartingPosition))
+                    if (node.Name == _service.GetDescription(MotionFieldsType.StartingPosition))
                     {
-                        errorProvider.SetError(label, "0 - положение равновесия, 1 - положение " +
-                            "максимального отклонения.");
+                        var infoErrorProvider = new ErrorProvider();
+                        infoErrorProvider.BlinkRate = 0;
+                        infoErrorProvider.Icon = new Icon(Environment.CurrentDirectory + 
+                            @"\help.ico");
+                        infoErrorProvider.SetError(label, "0 - положение равновесия, " +
+                            "1 - положение максимального отклонения.");
+
                         TextBox_Validating(errorProvider, textBox);
                     }
                     else
@@ -237,13 +208,13 @@ namespace View
                     {
                         errorProvider.SetError(ctrl, "Значение должно быть заполнено.");
                     }                    
-                    else if (!ctrl.Name.Contains(GetDescription(MotionFieldsType.StartingPosition)) && 
-                        !_correctValueRegex.IsMatch(ctrl.Text))
+                    else if (!ctrl.Name.Contains(_service.GetDescription(MotionFieldsType.
+                        StartingPosition)) && !_correctValueRegex.IsMatch(ctrl.Text))
                     {
                         errorProvider.SetError(ctrl, "Допускается только ввод цифр.");
                     }
-                    else if (ctrl.Name.Contains(GetDescription(MotionFieldsType.StartingPosition)) && 
-                        !_startingPositionRegex.IsMatch(ctrl.Text))
+                    else if (ctrl.Name.Contains(_service.GetDescription(MotionFieldsType.
+                        StartingPosition)) && !_startingPositionRegex.IsMatch(ctrl.Text))
                     {
                         errorProvider.SetError(ctrl, "Параметр может принимать значение, " +
                             "равное только 0 или 1.");
@@ -283,13 +254,13 @@ namespace View
                         {
                             throw new Exception("Строки ввода не должны быть пустыми.");
                         }
-                        else if (!_correctValueRegex.IsMatch(ctrl.Text) &&
-                            !ctrl.Name.Contains(GetDescription(MotionFieldsType.StartingPosition)) 
-                            || (!_startingPositionRegex.IsMatch(ctrl.Text) 
-                            && ctrl.Name.Contains(GetDescription(MotionFieldsType.StartingPosition))))
+                        else if (!_correctValueRegex.IsMatch(ctrl.Text) && !ctrl.Name.Contains
+                            (_service.GetDescription(MotionFieldsType.StartingPosition)) || 
+                            (!_startingPositionRegex.IsMatch(ctrl.Text) && ctrl.Name.Contains
+                            (_service.GetDescription(MotionFieldsType.StartingPosition))))
                         {
-                            throw new Exception("В качестве значений параметров могут быть введены " +
-                                "только цифры.");
+                            throw new Exception("В качестве значений параметров могут быть " +
+                                "введены только цифры.");
                         }
                     }
                 }
@@ -334,7 +305,8 @@ namespace View
             }
             catch (Exception exception)
             {                
-                MessageBox.Show(exception.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(exception.Message, "Ошибка", MessageBoxButtons.OK, 
+                    MessageBoxIcon.Error);
             }
         }
 
@@ -372,12 +344,14 @@ namespace View
             {
                 if (ctrl.GetType() == typeof(TextBox))
                 {
-                    if (ctrl.Name.Contains(GetDescription(MotionFieldsType.StartingPosition)))
+                    if (ctrl.Name.Contains(_service.GetDescription(MotionFieldsType.
+                        StartingPosition)))
                     {
                         ctrl.Text = rand.Next(0, 
                             Enum.GetNames(typeof(StartingPositionType)).Length).ToString();
                     }
-                    else if (ctrl.Name.Contains(GetDescription(MotionFieldsType.InitialPhase)))
+                    else if (ctrl.Name.Contains(_service.GetDescription(MotionFieldsType.
+                        InitialPhase)))
                     {
                         ctrl.Text = rand.Next(-(OscillatoryMotion.MaxPhase - 1), 
                             OscillatoryMotion.MaxPhase).ToString();

@@ -136,19 +136,13 @@ namespace Model
         /// <returns>Значение типа double</returns>
         protected override double CalculateCoordinate()
         {
-            double coordinate;
-
             switch (StartingPosition)
             {
                 case StartingPositionType.Equilibrium:
-                    coordinate = Amplitude * Math.Sin(CyclicFrequency * Time + InitialPhase);
-                    break;
+                    return Amplitude * Math.Sin(CyclicFrequency * Time + InitialPhase);
                 default:
-                    coordinate = Amplitude * Math.Cos(CyclicFrequency * Time + InitialPhase);
-                    break;
+                    return Amplitude * Math.Cos(CyclicFrequency * Time + InitialPhase);
             }
-
-            return coordinate;
         }
     }
 }

@@ -12,8 +12,13 @@ namespace View
     /// </summary>
     public enum MotionType
     {
-        [Description("Равномерное")] UniformMotion,
-        [Description("Равноускоренное")] AcceleratedMotion,
-        [Description("Колебательное")] OscillatoryMotion
+        [Description("Равномерное")]
+        UniformMotion,
+
+        [Description("Равноускоренное")] 
+        AcceleratedMotion,
+
+        [Description("Колебательное")] 
+        OscillatoryMotion
     }
 }

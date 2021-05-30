@@ -52,7 +52,7 @@
             this.groupBox1.Controls.Add(this.dataGridView);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(415, 263);
+            this.groupBox1.Size = new System.Drawing.Size(463, 263);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Параметры расчетов";
@@ -67,12 +67,12 @@
             this.dataGridView.ReadOnly = true;
             this.dataGridView.RowHeadersWidth = 70;
             this.dataGridView.RowTemplate.Height = 24;
-            this.dataGridView.Size = new System.Drawing.Size(402, 235);
+            this.dataGridView.Size = new System.Drawing.Size(450, 235);
             this.dataGridView.TabIndex = 0;
             // 
             // exitButton
             // 
-            this.exitButton.Location = new System.Drawing.Point(439, 285);
+            this.exitButton.Location = new System.Drawing.Point(489, 285);
             this.exitButton.Name = "exitButton";
             this.exitButton.Size = new System.Drawing.Size(94, 28);
             this.exitButton.TabIndex = 3;
@@ -134,7 +134,7 @@
             // 
             this.groupBox2.Controls.Add(this.saveButton);
             this.groupBox2.Controls.Add(this.openButton);
-            this.groupBox2.Location = new System.Drawing.Point(433, 12);
+            this.groupBox2.Location = new System.Drawing.Point(483, 12);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(105, 93);
             this.groupBox2.TabIndex = 4;
@@ -147,7 +147,7 @@
             this.groupBox3.Controls.Add(this.addCalculationButton);
             this.groupBox3.Controls.Add(this.removeCalculationButton);
             this.groupBox3.Controls.Add(this.findButton);
-            this.groupBox3.Location = new System.Drawing.Point(433, 112);
+            this.groupBox3.Location = new System.Drawing.Point(483, 112);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(105, 163);
             this.groupBox3.TabIndex = 7;
@@ -168,7 +168,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(551, 321);
+            this.ClientSize = new System.Drawing.Size(595, 321);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.exitButton);

@@ -35,11 +35,11 @@
             this.choiceLabel = new System.Windows.Forms.Label();
             this.timeLabel = new System.Windows.Forms.Label();
             this.timeTextBox = new System.Windows.Forms.TextBox();
-            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.CreateRandomDataButton = new System.Windows.Forms.Button();
             this.groupBox = new System.Windows.Forms.GroupBox();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
+            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.groupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.SuspendLayout();
             // 
             // OkButton
@@ -71,6 +71,7 @@
             this.comboBox.Name = "comboBox";
             this.comboBox.Size = new System.Drawing.Size(160, 24);
             this.comboBox.TabIndex = 2;
+            this.comboBox.KeyPress += ComboBox_KeyPress;
             // 
             // choiceLabel
             // 
@@ -98,12 +99,6 @@
             this.timeTextBox.Size = new System.Drawing.Size(60, 22);
             this.timeTextBox.TabIndex = 5;
             // 
-            // errorProvider1
-            // 
-            this.errorProvider1.BlinkRate = 0;
-            this.errorProvider1.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
-            this.errorProvider1.ContainerControl = this;
-            // 
             // CreateRandomDataButton
             // 
             this.CreateRandomDataButton.Location = new System.Drawing.Point(116, 300);
@@ -125,6 +120,12 @@
             this.groupBox.TabStop = false;
             this.groupBox.Text = "Параметры движения";
             // 
+            // errorProvider1
+            // 
+            this.errorProvider1.BlinkRate = 0;
+            this.errorProvider1.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
+            this.errorProvider1.ContainerControl = this;
+            // 
             // AddCalculationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -138,9 +139,9 @@
             this.Controls.Add(this.OkButton);
             this.Name = "AddCalculationForm";
             this.Text = "Новый расчет";
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.groupBox.ResumeLayout(false);
             this.groupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -154,8 +155,8 @@
         private System.Windows.Forms.Label choiceLabel;
         private System.Windows.Forms.Label timeLabel;
         private System.Windows.Forms.TextBox timeTextBox;
-        private System.Windows.Forms.ErrorProvider errorProvider1;
         private System.Windows.Forms.Button CreateRandomDataButton;
         private System.Windows.Forms.GroupBox groupBox;
+        private System.Windows.Forms.ErrorProvider errorProvider1;
     }
 }
