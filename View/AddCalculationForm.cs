@@ -173,8 +173,7 @@ namespace View
                     {
                         var infoErrorProvider = new ErrorProvider();
                         infoErrorProvider.BlinkRate = 0;
-                        infoErrorProvider.Icon = new Icon(Environment.CurrentDirectory + 
-                            @"\help.ico");
+                        infoErrorProvider.Icon = Properties.Resources.help;
                         infoErrorProvider.SetError(label, "0 - положение равновесия, " +
                             "1 - положение максимального отклонения.");
 
