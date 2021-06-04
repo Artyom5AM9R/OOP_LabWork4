@@ -30,11 +30,10 @@ namespace View
         {
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            //TODO: масштабирование формы +++
             MaximizeBox = false;
             openFileDialog.Filter = "Specific files(*.mtn) | *.mtn";
             saveFileDialog.Filter = "Specific files(*.mtn) | *.mtn";
-            //TODO: сделать выделение цельным для всей строки, а не только для ячейки +++
+
             dataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         }
 
@@ -48,7 +47,8 @@ namespace View
             AddCalculationForm form = new AddCalculationForm();
             form.FormClosed += form_FormClosed;
             form.Show();
-                        
+            
+            //TODO: RSDN naming
             void form_FormClosed(object senderForm, FormClosedEventArgs f)
             {
                 if (form.DialogResult == DialogResult.OK)
@@ -89,20 +89,19 @@ namespace View
                 line.Cells[0].Value = line.Index + 1;
 
                 var service = new ServiceOptions();
-                //TODO: добавить информацию о типе движения +++
                 switch (list[line.Index].GetType().Name)
                 {
                     case nameof(MotionType.UniformMotion):
-                        line.Cells[1].Value = service.GetDescription(MotionType.
-                            UniformMotion);
+                        line.Cells[1].Value = service.GetDescription(
+                            MotionType.UniformMotion);
                         break;
                     case nameof(MotionType.AcceleratedMotion):
-                        line.Cells[1].Value = service.GetDescription(MotionType.
-                            AcceleratedMotion);
+                        line.Cells[1].Value = service.GetDescription(
+                            MotionType.AcceleratedMotion);
                         break;
                     case nameof(MotionType.OscillatoryMotion):
-                        line.Cells[1].Value = service.GetDescription(MotionType.
-                            OscillatoryMotion);
+                        line.Cells[1].Value = service.GetDescription(
+                            MotionType.OscillatoryMotion);
                         break;
                 }
 
@@ -144,6 +143,7 @@ namespace View
                 form.FormClosed += form_FormClosed;
                 form.Show();
 
+                //TODO: RSDN naming
                 void form_FormClosed(object senderForm, FormClosedEventArgs f)
                 {
                     var findResultList = new List<MotionBase>();
@@ -152,7 +152,6 @@ namespace View
                     {
                         foreach (MotionBase node in _motionList)
                         {
-                            //TODO: сделать поиск по каждому из параметров в отдельности +++
                             switch (form.Time)
                             {
                                 case 0:
@@ -265,26 +264,25 @@ namespace View
             }
             else
             {
+                //TODO: RSDN naming
                 var _service = new ServiceOptions();
-                //TODO: убрать форму для удаления, сделать удаление через выделение строк в dataGridView +++
                 foreach (DataGridViewRow line in dataGridView.Rows)
                 {
-                    if (line.Selected)
+                    if (!line.Selected) continue;
+
+                    string type = _service.GetEnumElementName(line.Cells[1].Value.ToString());
+                    foreach (var motion in _motionList)
                     {
-                        string type = _service.GetEnumElementName(line.Cells[1].Value.ToString());
-                        foreach (MotionBase motion in _motionList)
+                        if (type == motion.GetType().ToString() 
+                            && line.Cells[2].Value.ToString() == motion.Coordinate.ToString() 
+                            && line.Cells[3].Value.ToString() == motion.Time.ToString())
                         {
-                            if (type == motion.GetType().ToString() &&
-                                line.Cells[2].Value.ToString() == motion.Coordinate.ToString() &&
-                                line.Cells[3].Value.ToString() == motion.Time.ToString())
-                            {
-                                listForDelete.Add(motion);
-                            }
+                            listForDelete.Add(motion);
                         }
                     }
                 }
 
-                foreach (MotionBase node in listForDelete)
+                foreach (var node in listForDelete)
                 {
                     _motionList.Remove(node);
                 }

@@ -52,7 +52,6 @@ namespace View
         {
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            //TODO: масштабирование формы +++
             MaximizeBox = false;
             comboBox.SelectedIndexChanged += СomboBox_SelectedIndexChanged;
             comboBox.Items.Add(_service.GetDescription(MotionType.UniformMotion));
@@ -69,7 +68,6 @@ namespace View
         /// <param name="e"></param>
         private void ComboBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            //TODO: сделать comboBox только ReadOnly +++
             e.Handled = true;
         }
 
@@ -109,7 +107,7 @@ namespace View
 
             int coordinateY = 58;
             _fields = TmpMotion.GetType().GetProperties();
-            //TODO: декомпозировать на более мелкие методы +++
+
             foreach (PropertyInfo node in _fields)
             {
                 if (node.Name != _service.GetDescription(MotionFieldsType.Time) && 
@@ -180,14 +178,12 @@ namespace View
 
             label.Name = $"{field.Name}Label";
 
-            if (field.Name == _service.GetDescription(MotionFieldsType.StartingPosition))
-            {
-                label.Size = new Size(125, 18);
-            }
-            else
-            {
-                label.Size = new Size(155, 18);
-            }
+            var labelWidth =
+                field.Name == _service.GetDescription(MotionFieldsType.StartingPosition)
+                    ? 125
+                    : 155;
+            label.Size = new Size(labelWidth, 18);
+            
 
             label.Location = new Point(8, coordinate);
             groupBox.Controls.Add(label);
@@ -209,17 +205,17 @@ namespace View
             textBox.Location = new Point(168, coordinate - 2);
             groupBox.Controls.Add(textBox);
 
-            var errorProvider = new ErrorProvider();
-            errorProvider.BlinkRate = 0;
+            var errorProvider = new ErrorProvider {BlinkRate = 0};
 
             if (field.Name == _service.GetDescription(MotionFieldsType.StartingPosition))
             {
-                var infoErrorProvider = new ErrorProvider();
-                infoErrorProvider.BlinkRate = 0;
-                //TODO: изменить значок с предупреждения на информирование +++
-                infoErrorProvider.Icon = Properties.Resources.help;
+                var infoErrorProvider = new ErrorProvider
+                {
+                    BlinkRate = 0, 
+                    Icon = Properties.Resources.help
+                };
                 infoErrorProvider.SetError(label, "0 - положение равновесия, " +
-                    "1 - положение максимального отклонения.");
+                                                  "1 - положение максимального отклонения.");
 
                 TextBox_Validating(errorProvider, textBox);
             }
@@ -304,7 +300,7 @@ namespace View
                         }
                     }
                 }
-                //TODO: декомпозировать на более мелкие методы +++
+
                 AddMotionParamentersValue();
 
                 Close();
@@ -328,15 +324,14 @@ namespace View
 
             foreach (Control ctrl in groupBox.Controls)
             {
-                if (ctrl.GetType() == typeof(TextBox))
-                {
-                    if (ctrl.Text.Contains("."))
-                    {
-                        ctrl.Text = ctrl.Text.Replace(".", ",");
-                    }
+                if (ctrl.GetType() != typeof(TextBox)) continue;
 
-                    valueList.Add(ctrl.Text);
+                if (ctrl.Text.Contains("."))
+                {
+                    ctrl.Text = ctrl.Text.Replace(".", ",");
                 }
+
+                valueList.Add(ctrl.Text);
             }
 
             switch (TmpMotion)
@@ -371,7 +366,6 @@ namespace View
             Close();
         }
 
-        //TODO: сделать версию Release и убрать оттуда эту функцию вместе с кнопкой на форме +++
         /// <summary>
         /// Действия при нажатии кнопки "Случайное заполнение"
         /// </summary>
@@ -394,25 +388,24 @@ namespace View
 
             foreach (Control ctrl in groupBox.Controls)
             {
-                if (ctrl.GetType() == typeof(TextBox))
+                if (ctrl.GetType() != typeof(TextBox)) continue;
+
+                if (ctrl.Name.Contains(_service.GetDescription(MotionFieldsType.
+                    StartingPosition)))
                 {
-                    if (ctrl.Name.Contains(_service.GetDescription(MotionFieldsType.
-                        StartingPosition)))
-                    {
-                        ctrl.Text = rand.Next(0, 
-                            Enum.GetNames(typeof(StartingPositionType)).Length).ToString();
-                    }
-                    else if (ctrl.Name.Contains(_service.GetDescription(MotionFieldsType.
-                        InitialPhase)))
-                    {
-                        ctrl.Text = rand.Next(-(OscillatoryMotion.MaxPhase - 1), 
-                            OscillatoryMotion.MaxPhase).ToString();
-                    }
-                    else
-                    {
-                        ctrl.Text = rand.Next(1, 501).ToString();
-                    }
-                } 
+                    ctrl.Text = rand.Next(0, 
+                        Enum.GetNames(typeof(StartingPositionType)).Length).ToString();
+                }
+                else if (ctrl.Name.Contains(_service.GetDescription(MotionFieldsType.
+                    InitialPhase)))
+                {
+                    ctrl.Text = rand.Next(-(OscillatoryMotion.MaxPhase - 1), 
+                        OscillatoryMotion.MaxPhase).ToString();
+                }
+                else
+                {
+                    ctrl.Text = rand.Next(1, 501).ToString();
+                }
             }
         }
     }
