@@ -201,15 +201,20 @@ namespace View
                 return;
             }
 
-            var reader = new XmlSerializer(typeof(List<MotionBase>));
-
-            using (var file = System.IO.File.OpenRead(openFileDialog.FileName))
+            try
             {
-                _motionList = new List<MotionBase>((IEnumerable<MotionBase>)reader.
-                    Deserialize(file));
-            }
+                var serializer = new Serializer();
 
-            RefreshOfDataGridView(_motionList);
+                _motionList = serializer.OpenFile(openFileDialog.FileName, _motionList);
+                RefreshOfDataGridView(_motionList);
+            }
+            catch
+            {
+                _motionList.Clear();
+                RefreshOfDataGridView(_motionList);
+                MessageBox.Show("Файл поврежден, не возможно открыть.", "Ошибка", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
@@ -234,12 +239,9 @@ namespace View
                 return;
             }
 
-            var writer = new XmlSerializer(typeof(List<MotionBase>));
+            var serializer = new Serializer();
 
-            using (var file = System.IO.File.Create(saveFileDialog.FileName))
-            {
-                writer.Serialize(file, _motionList);
-            }
+            serializer.SaveFile(saveFileDialog.FileName, _motionList);
         }
 
         /// <summary>
