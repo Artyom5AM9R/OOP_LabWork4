@@ -54,9 +54,9 @@ namespace View
         {
             AddCalculationForm form = new AddCalculationForm();
             form.FormClosed += Form_FormClosed;
+
             form.Show();
             
-            //TODO: RSDN naming +++
             void Form_FormClosed(object senderForm, FormClosedEventArgs f)
             {
                 if (form.DialogResult == DialogResult.OK)
@@ -184,9 +184,8 @@ namespace View
             {
                 FindCalculationForm form = new FindCalculationForm();
                 form.FormClosed += Form_FormClosed;
-                form.Show();
+                form.ShowDialog(this);
 
-                //TODO: RSDN naming +++
                 void Form_FormClosed(object senderForm, FormClosedEventArgs f)
                 {
                     var findResultList = new List<MotionBase>();

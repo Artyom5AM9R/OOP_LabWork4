@@ -178,12 +178,13 @@ namespace View
 
             label.Name = $"{field.Name}Label";
 
-            var labelWidth = 
+            var labelWidth =
                 field.Name == _service.GetDescription(MotionFieldsType.StartingPosition)
                     ? 125
                     : 155;
-            
             label.Size = new Size(labelWidth, 18);
+            
+
             label.Location = new Point(8, coordinate);
             groupBox.Controls.Add(label);
         }
@@ -210,11 +211,11 @@ namespace View
             {
                 var infoErrorProvider = new ErrorProvider
                 {
-                    BlinkRate = 0,
+                    BlinkRate = 0, 
                     Icon = Properties.Resources.help
                 };
                 infoErrorProvider.SetError(label, "0 - положение равновесия, " +
-                    "1 - положение максимального отклонения.");
+                                                  "1 - положение максимального отклонения.");
 
                 TextBox_Validating(errorProvider, textBox);
             }
@@ -283,19 +284,20 @@ namespace View
                 
                 foreach (Control ctrl in groupBox.Controls)
                 {
-                    if (ctrl.GetType() != typeof(TextBox)) continue;
-
-                    if (string.IsNullOrEmpty(ctrl.Text))
+                    if (ctrl.GetType() == typeof(TextBox))
                     {
-                        throw new Exception("Строки ввода не должны быть пустыми.");
-                    }
-                    else if (!_correctValueRegex.IsMatch(ctrl.Text) && !ctrl.Name.Contains
-                        (_service.GetDescription(MotionFieldsType.StartingPosition)) ||
-                        (!_startingPositionRegex.IsMatch(ctrl.Text) && ctrl.Name.Contains
-                        (_service.GetDescription(MotionFieldsType.StartingPosition))))
-                    {
-                        throw new Exception("В качестве значений параметров могут быть " +
-                            "введены только цифры.");
+                        if (string.IsNullOrEmpty(ctrl.Text))
+                        {
+                            throw new Exception("Строки ввода не должны быть пустыми.");
+                        }
+                        else if (!_correctValueRegex.IsMatch(ctrl.Text) && !ctrl.Name.Contains
+                            (_service.GetDescription(MotionFieldsType.StartingPosition)) || 
+                            (!_startingPositionRegex.IsMatch(ctrl.Text) && ctrl.Name.Contains
+                            (_service.GetDescription(MotionFieldsType.StartingPosition))))
+                        {
+                            throw new Exception("В качестве значений параметров могут быть " +
+                                "введены только цифры.");
+                        }
                     }
                 }
 
@@ -330,7 +332,6 @@ namespace View
                 }
 
                 valueList.Add(ctrl.Text);
-
             }
 
             switch (TmpMotion)
@@ -390,15 +391,15 @@ namespace View
                 if (ctrl.GetType() != typeof(TextBox)) continue;
 
                 if (ctrl.Name.Contains(_service.GetDescription(MotionFieldsType.
-                        StartingPosition)))
+                    StartingPosition)))
                 {
-                    ctrl.Text = rand.Next(0,
+                    ctrl.Text = rand.Next(0, 
                         Enum.GetNames(typeof(StartingPositionType)).Length).ToString();
                 }
                 else if (ctrl.Name.Contains(_service.GetDescription(MotionFieldsType.
                     InitialPhase)))
                 {
-                    ctrl.Text = rand.Next(-(OscillatoryMotion.MaxPhase - 1),
+                    ctrl.Text = rand.Next(-(OscillatoryMotion.MaxPhase - 1), 
                         OscillatoryMotion.MaxPhase).ToString();
                 }
                 else
