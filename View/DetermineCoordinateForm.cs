@@ -24,6 +24,15 @@ namespace View
         private List<MotionBase> _motionList = new List<MotionBase>();
 
         /// <summary>
+        /// Указатель на необходимость сохранения файла перед совершением операций 
+        /// по открытию нового файла или выхода из программы
+        /// </summary>
+        /// <remarks>
+        /// false - не надо сохранять, true - надо сохранять.
+        /// </remarks>
+        private bool _saveChecker = false;
+
+        /// <summary>
         /// Дейтсвия при открытии формы
         /// </summary>
         public CoordinateDeterminationForm()
@@ -33,7 +42,6 @@ namespace View
             MaximizeBox = false;
             openFileDialog.Filter = "Specific files(*.mtn) | *.mtn";
             saveFileDialog.Filter = "Specific files(*.mtn) | *.mtn";
-
             dataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         }
 
@@ -45,14 +53,16 @@ namespace View
         private void AddCalculationButton_Click(object sender, EventArgs e)
         {
             AddCalculationForm form = new AddCalculationForm();
-            form.FormClosed += form_FormClosed;
+            form.FormClosed += Form_FormClosed;
             form.Show();
             
-            //TODO: RSDN naming
-            void form_FormClosed(object senderForm, FormClosedEventArgs f)
+            //TODO: RSDN naming +++
+            void Form_FormClosed(object senderForm, FormClosedEventArgs f)
             {
                 if (form.DialogResult == DialogResult.OK)
                 {
+                    _saveChecker = true;
+
                     _motionList.Add(form.TmpMotion);
                     RefreshOfDataGridView(_motionList);
                 }
@@ -89,6 +99,7 @@ namespace View
                 line.Cells[0].Value = line.Index + 1;
 
                 var service = new ServiceOptions();
+
                 switch (list[line.Index].GetType().Name)
                 {
                     case nameof(MotionType.UniformMotion):
@@ -122,7 +133,39 @@ namespace View
         /// <param name="e"></param>
         private void ExitButton_Click(object sender, EventArgs e)
         {
+            TestSaveButtonClick(sender, e);
             Close();
+        }
+
+        /// <summary>
+        /// Метод для проверки нажатия кнопки сохранения файла перед его закрытием.
+        /// </summary>
+        /// <param name="sender">Элемент, во время активности которого 
+        /// нужно запускать проверку</param>
+        /// <param name="e">Информация о событии, которое инициирует 
+        /// элемент</param>
+        /// <remarks>
+        /// Открывает окно сохранения файла в том случае, если файл закрывается, 
+        /// а его содержимое было изменено и не зафиксировано.
+        /// </remarks>
+        private void TestSaveButtonClick(object sender, EventArgs e)
+        {
+            if (_saveChecker == false)
+            {
+                return;
+            }
+
+            var result = MessageBox.Show("Текущий файл не был сохранен. " +
+                    "Сохранить файл?", "Предупреждение", MessageBoxButtons.YesNo);
+
+            if (result == DialogResult.Yes)
+            {
+                SaveButton_Click(sender, e);
+            }
+            else
+            {
+                _saveChecker = false;
+            }
         }
 
         /// <summary>
@@ -140,11 +183,11 @@ namespace View
             else
             {
                 FindCalculationForm form = new FindCalculationForm();
-                form.FormClosed += form_FormClosed;
+                form.FormClosed += Form_FormClosed;
                 form.Show();
 
-                //TODO: RSDN naming
-                void form_FormClosed(object senderForm, FormClosedEventArgs f)
+                //TODO: RSDN naming +++
+                void Form_FormClosed(object senderForm, FormClosedEventArgs f)
                 {
                     var findResultList = new List<MotionBase>();
 
@@ -195,6 +238,8 @@ namespace View
         /// <param name="e"></param>
         private void OpenButton_Click(object sender, EventArgs e)
         {
+            TestSaveButtonClick(sender, e);
+
             if (openFileDialog.ShowDialog() == DialogResult.Cancel)
             {
                 return;
@@ -209,8 +254,6 @@ namespace View
             }
             catch
             {
-                _motionList.Clear();
-                RefreshOfDataGridView(_motionList);
                 MessageBox.Show("Файл поврежден, не возможно открыть.", "Ошибка", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -237,10 +280,13 @@ namespace View
             {
                 return;
             }
+            else
+            {
+                _saveChecker = false;
 
-            var serializer = new Serializer();
-
-            serializer.SaveFile(saveFileDialog.FileName, _motionList);
+                var serializer = new Serializer();
+                serializer.SaveFile(saveFileDialog.FileName, _motionList);
+            }
         }
 
         /// <summary>
@@ -264,18 +310,20 @@ namespace View
             }
             else
             {
-                //TODO: RSDN naming
+                _saveChecker = true;
                 var _service = new ServiceOptions();
+                
                 foreach (DataGridViewRow line in dataGridView.Rows)
                 {
                     if (!line.Selected) continue;
 
                     string type = _service.GetEnumElementName(line.Cells[1].Value.ToString());
-                    foreach (var motion in _motionList)
+
+                    foreach (MotionBase motion in _motionList)
                     {
-                        if (type == motion.GetType().ToString() 
-                            && line.Cells[2].Value.ToString() == motion.Coordinate.ToString() 
-                            && line.Cells[3].Value.ToString() == motion.Time.ToString())
+                        if (type == motion.GetType().ToString() &&
+                            line.Cells[2].Value.ToString() == motion.Coordinate.ToString() &&
+                            line.Cells[3].Value.ToString() == motion.Time.ToString())
                         {
                             listForDelete.Add(motion);
                         }

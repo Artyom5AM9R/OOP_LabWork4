@@ -71,6 +71,7 @@
             this.comboBox.Name = "comboBox";
             this.comboBox.Size = new System.Drawing.Size(160, 24);
             this.comboBox.TabIndex = 2;
+            this.comboBox.KeyPress += ComboBox_KeyPress;
             // 
             // choiceLabel
             // 
