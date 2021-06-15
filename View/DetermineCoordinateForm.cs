@@ -24,13 +24,9 @@ namespace View
         private List<MotionBase> _motionList = new List<MotionBase>();
 
         /// <summary>
-        /// Указатель на необходимость сохранения файла перед совершением операций 
-        /// по открытию нового файла или выхода из программы
+        /// Список для хранения начального состояния расчетов
         /// </summary>
-        /// <remarks>
-        /// false - не надо сохранять, true - надо сохранять.
-        /// </remarks>
-        private bool _saveChecker = false;
+        private List<MotionBase> _startingStateOfMotionList = new List<MotionBase>();
 
         /// <summary>
         /// Дейтсвия при открытии формы
@@ -43,6 +39,16 @@ namespace View
             openFileDialog.Filter = "Specific files(*.mtn) | *.mtn";
             saveFileDialog.Filter = "Specific files(*.mtn) | *.mtn";
             dataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+
+            FormClosed += Form_FormClosed;
+
+            void Form_FormClosed(object senderForm, FormClosedEventArgs f)
+            {
+                if (f.CloseReason == CloseReason.UserClosing)
+                {
+                    FileChangeCheck(senderForm, f);
+                }
+            }
         }
 
         /// <summary>
@@ -53,19 +59,13 @@ namespace View
         private void AddCalculationButton_Click(object sender, EventArgs e)
         {
             AddCalculationForm form = new AddCalculationForm();
-            form.FormClosed += Form_FormClosed;
-
-            form.Show();
+            //TODO: убрать подписку на событие FormClosed +++
+            form.ShowDialog();
             
-            void Form_FormClosed(object senderForm, FormClosedEventArgs f)
+            if (form.DialogResult == DialogResult.OK)
             {
-                if (form.DialogResult == DialogResult.OK)
-                {
-                    _saveChecker = true;
-
-                    _motionList.Add(form.TmpMotion);
-                    RefreshOfDataGridView(_motionList);
-                }
+                _motionList.Add(form.TmpMotion);
+                RefreshOfDataGridView(_motionList);
             }
         }
 
@@ -133,12 +133,11 @@ namespace View
         /// <param name="e"></param>
         private void ExitButton_Click(object sender, EventArgs e)
         {
-            TestSaveButtonClick(sender, e);
             Close();
         }
 
         /// <summary>
-        /// Метод для проверки нажатия кнопки сохранения файла перед его закрытием.
+        /// Метод для проверки начаньного и конечного состояния рабочего файла.
         /// </summary>
         /// <param name="sender">Элемент, во время активности которого 
         /// нужно запускать проверку</param>
@@ -148,15 +147,16 @@ namespace View
         /// Открывает окно сохранения файла в том случае, если файл закрывается, 
         /// а его содержимое было изменено и не зафиксировано.
         /// </remarks>
-        private void TestSaveButtonClick(object sender, EventArgs e)
+        private void FileChangeCheck(object sender, EventArgs e)
         {
-            if (_saveChecker == false)
+            //TODO: сделать условие, проверяющее начальное и конечное состояния файла +++
+            if (_startingStateOfMotionList.SequenceEqual(_motionList))
             {
                 return;
             }
 
             var result = MessageBox.Show("Текущий файл не был сохранен. " +
-                    "Сохранить файл?", "Предупреждение", MessageBoxButtons.YesNo);
+                "Сохранить файл?", "Предупреждение", MessageBoxButtons.YesNo);
 
             if (result == DialogResult.Yes)
             {
@@ -164,7 +164,8 @@ namespace View
             }
             else
             {
-                _saveChecker = false;
+                _startingStateOfMotionList.Clear();
+                _startingStateOfMotionList.AddRange(_motionList.ToArray());
             }
         }
 
@@ -183,48 +184,45 @@ namespace View
             else
             {
                 FindCalculationForm form = new FindCalculationForm();
-                form.FormClosed += Form_FormClosed;
+                //TODO: убрать подписку на событие FormClosed +++
                 form.ShowDialog(this);
 
-                void Form_FormClosed(object senderForm, FormClosedEventArgs f)
+                var findResultList = new List<MotionBase>();
+
+                if (form.DialogResult == DialogResult.OK)
                 {
-                    var findResultList = new List<MotionBase>();
-
-                    if (form.DialogResult == DialogResult.OK)
+                    foreach (MotionBase node in _motionList)
                     {
-                        foreach (MotionBase node in _motionList)
+                        switch (form.Time)
                         {
-                            switch (form.Time)
-                            {
-                                case 0:
-                                    if (Math.Round(node.Coordinate, 4) == form.Coordinate)
-                                    {
-                                        findResultList.Add(node);
-                                    }
-                                    break;
-                                default:
-                                    if (node.Time == form.Time)
-                                    {
-                                        findResultList.Add(node);
-                                    }
-                                    else if (Math.Round(node.Coordinate, 4) == form.Coordinate &&
-                                        node.Time == form.Time)
-                                    {
-                                        findResultList.Add(node);
-                                    }
-                                    break;
-                            }
+                            case 0:
+                                if (Math.Round(node.Coordinate, 4) == form.Coordinate)
+                                {
+                                    findResultList.Add(node);
+                                }
+                                break;
+                            default:
+                                if (node.Time == form.Time)
+                                {
+                                    findResultList.Add(node);
+                                }
+                                else if (Math.Round(node.Coordinate, 4) == form.Coordinate &&
+                                    node.Time == form.Time)
+                                {
+                                    findResultList.Add(node);
+                                }
+                                break;
                         }
+                    }
 
-                        if (findResultList.Count != 0)
-                        {
-                            RefreshOfDataGridView(findResultList);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Расчет с указанными параметрами отсутствует. " +
-                                "Уточните параметры поиска.", "Уведомление");
-                        }
+                    if (findResultList.Count != 0)
+                    {
+                        RefreshOfDataGridView(findResultList);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Расчет с указанными параметрами отсутствует. " +
+                            "Уточните параметры поиска.", "Уведомление");
                     }
                 }
             }
@@ -237,7 +235,7 @@ namespace View
         /// <param name="e"></param>
         private void OpenButton_Click(object sender, EventArgs e)
         {
-            TestSaveButtonClick(sender, e);
+            FileChangeCheck(sender, e);
 
             if (openFileDialog.ShowDialog() == DialogResult.Cancel)
             {
@@ -249,6 +247,8 @@ namespace View
                 var serializer = new Serializer();
 
                 _motionList = serializer.OpenFile(openFileDialog.FileName, _motionList);
+                _startingStateOfMotionList.Clear();
+                _startingStateOfMotionList.AddRange(_motionList.ToArray());
                 RefreshOfDataGridView(_motionList);
             }
             catch
@@ -281,10 +281,10 @@ namespace View
             }
             else
             {
-                _saveChecker = false;
-
                 var serializer = new Serializer();
                 serializer.SaveFile(saveFileDialog.FileName, _motionList);
+                _startingStateOfMotionList.Clear();
+                _startingStateOfMotionList.AddRange(_motionList.ToArray());
             }
         }
 
@@ -309,13 +309,10 @@ namespace View
             }
             else
             {
-                _saveChecker = true;
                 var _service = new ServiceOptions();
                 
-                foreach (DataGridViewRow line in dataGridView.Rows)
+                foreach (DataGridViewRow line in dataGridView.SelectedRows)
                 {
-                    if (!line.Selected) continue;
-
                     string type = _service.GetEnumElementName(line.Cells[1].Value.ToString());
 
                     foreach (MotionBase motion in _motionList)

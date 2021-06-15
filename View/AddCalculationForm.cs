@@ -184,7 +184,6 @@ namespace View
                     : 155;
             label.Size = new Size(labelWidth, 18);
             
-
             label.Location = new Point(8, coordinate);
             groupBox.Controls.Add(label);
         }
@@ -284,31 +283,30 @@ namespace View
                 
                 foreach (Control ctrl in groupBox.Controls)
                 {
-                    if (ctrl.GetType() == typeof(TextBox))
+                    if (ctrl.GetType() != typeof(TextBox)) continue;
+
+                    if (string.IsNullOrEmpty(ctrl.Text))
                     {
-                        if (string.IsNullOrEmpty(ctrl.Text))
-                        {
-                            throw new Exception("Строки ввода не должны быть пустыми.");
-                        }
-                        else if (!_correctValueRegex.IsMatch(ctrl.Text) && !ctrl.Name.Contains
-                            (_service.GetDescription(MotionFieldsType.StartingPosition)) || 
-                            (!_startingPositionRegex.IsMatch(ctrl.Text) && ctrl.Name.Contains
-                            (_service.GetDescription(MotionFieldsType.StartingPosition))))
-                        {
-                            throw new Exception("В качестве значений параметров могут быть " +
-                                "введены только цифры.");
-                        }
+                        throw new Exception("Строки ввода не должны быть пустыми.");
+                    }
+                    else if (!_correctValueRegex.IsMatch(ctrl.Text) && !ctrl.Name.Contains
+                        (_service.GetDescription(MotionFieldsType.StartingPosition)) ||
+                        (!_startingPositionRegex.IsMatch(ctrl.Text) && ctrl.Name.Contains
+                        (_service.GetDescription(MotionFieldsType.StartingPosition))))
+                    {
+                        throw new Exception("В качестве значений параметров могут быть " +
+                            "введены только цифры.");
                     }
                 }
 
                 AddMotionParamentersValue();
-
                 Close();
             }
             catch (Exception exception)
             {                
                 MessageBox.Show(exception.Message, "Ошибка", MessageBoxButtons.OK, 
                     MessageBoxIcon.Error);
+                DialogResult = DialogResult.None;
             }
         }
 

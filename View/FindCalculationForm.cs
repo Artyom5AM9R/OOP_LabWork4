@@ -88,6 +88,7 @@ namespace View
             {
                 MessageBox.Show(exception.Message, "Ошибка", MessageBoxButtons.OK, 
                     MessageBoxIcon.Error);
+                DialogResult = DialogResult.None;
             }
         }
 
