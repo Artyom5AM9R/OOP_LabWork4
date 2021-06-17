@@ -181,6 +181,7 @@ namespace View
             else
             {
                 FindCalculationForm form = new FindCalculationForm();
+
                 form.ShowDialog(this);
 
                 var findResultList = new List<MotionBase>();
@@ -203,7 +204,7 @@ namespace View
                                 findResultList.Add(node);
                             }
                             else if (Math.Round(node.Coordinate, 4) == form.Coordinate &&
-                                node.Time == form.Time)
+                                     node.Time == form.Time)
                             {
                                 findResultList.Add(node);
                             }
@@ -218,7 +219,7 @@ namespace View
                 else
                 {
                     MessageBox.Show("Расчет с указанными параметрами отсутствует. " +
-                        "Уточните параметры поиска.", "Уведомление");
+                                    "Уточните параметры поиска.", "Уведомление");
                 }
             }
         }
@@ -246,10 +247,10 @@ namespace View
                 _startingStateOfMotionList.AddRange(_motionList.ToArray());
                 RefreshOfDataGridView(_motionList);
             }
-            catch (Exception exception)
+            catch
             {
-                MessageBox.Show(exception.Message, "Ошибка", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                MessageBox.Show("Файл поврежден, не возможно открыть.", "Ошибка", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
