@@ -59,14 +59,12 @@ namespace View
         private void AddCalculationButton_Click(object sender, EventArgs e)
         {
             AddCalculationForm form = new AddCalculationForm();
-            //TODO: убрать подписку на событие FormClosed +++
             form.ShowDialog();
-            
-            if (form.DialogResult == DialogResult.OK)
-            {
-                _motionList.Add(form.TmpMotion);
-                RefreshOfDataGridView(_motionList);
-            }
+
+            if (form.DialogResult != DialogResult.OK) return;
+
+            _motionList.Add(form.TmpMotion);
+            RefreshOfDataGridView(_motionList);
         }
 
         /// <summary>
@@ -149,7 +147,6 @@ namespace View
         /// </remarks>
         private void FileChangeCheck(object sender, EventArgs e)
         {
-            //TODO: сделать условие, проверяющее начальное и конечное состояния файла +++
             if (_startingStateOfMotionList.SequenceEqual(_motionList))
             {
                 return;
@@ -184,46 +181,45 @@ namespace View
             else
             {
                 FindCalculationForm form = new FindCalculationForm();
-                //TODO: убрать подписку на событие FormClosed +++
+
                 form.ShowDialog(this);
 
                 var findResultList = new List<MotionBase>();
 
-                if (form.DialogResult == DialogResult.OK)
-                {
-                    foreach (MotionBase node in _motionList)
-                    {
-                        switch (form.Time)
-                        {
-                            case 0:
-                                if (Math.Round(node.Coordinate, 4) == form.Coordinate)
-                                {
-                                    findResultList.Add(node);
-                                }
-                                break;
-                            default:
-                                if (node.Time == form.Time)
-                                {
-                                    findResultList.Add(node);
-                                }
-                                else if (Math.Round(node.Coordinate, 4) == form.Coordinate &&
-                                    node.Time == form.Time)
-                                {
-                                    findResultList.Add(node);
-                                }
-                                break;
-                        }
-                    }
+                if (form.DialogResult != DialogResult.OK) return;
 
-                    if (findResultList.Count != 0)
+                foreach (var node in _motionList)
+                {
+                    switch (form.Time)
                     {
-                        RefreshOfDataGridView(findResultList);
+                        case 0:
+                            if (Math.Round(node.Coordinate, 4) == form.Coordinate)
+                            {
+                                findResultList.Add(node);
+                            }
+                            break;
+                        default:
+                            if (node.Time == form.Time)
+                            {
+                                findResultList.Add(node);
+                            }
+                            else if (Math.Round(node.Coordinate, 4) == form.Coordinate &&
+                                     node.Time == form.Time)
+                            {
+                                findResultList.Add(node);
+                            }
+                            break;
                     }
-                    else
-                    {
-                        MessageBox.Show("Расчет с указанными параметрами отсутствует. " +
-                            "Уточните параметры поиска.", "Уведомление");
-                    }
+                }
+
+                if (findResultList.Count != 0)
+                {
+                    RefreshOfDataGridView(findResultList);
+                }
+                else
+                {
+                    MessageBox.Show("Расчет с указанными параметрами отсутствует. " +
+                                    "Уточните параметры поиска.", "Уведомление");
                 }
             }
         }
