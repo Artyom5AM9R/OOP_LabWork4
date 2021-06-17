@@ -21,12 +21,19 @@ namespace View
         /// <returns>Список типа List с объектами класса MotionBase</returns>
         public List<MotionBase> OpenFile(string fileName, List<MotionBase> list)
         {
-            var reader = new XmlSerializer(typeof(List<MotionBase>));
-
-            using (var file = System.IO.File.OpenRead(fileName))
+            try
             {
-                list = new List<MotionBase>((IEnumerable<MotionBase>)reader.
-                    Deserialize(file));
+                var reader = new XmlSerializer(typeof(List<MotionBase>));
+
+                using (var file = System.IO.File.OpenRead(fileName))
+                {
+                    list = new List<MotionBase>((IEnumerable<MotionBase>)reader.
+                        Deserialize(file));
+                }
+            }
+            catch
+            {
+                throw new Exception("Файл поврежден, не возможно открыть.");
             }
 
             return list;

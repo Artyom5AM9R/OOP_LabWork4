@@ -26,13 +26,7 @@ namespace Model
         /// Свойство для доступа к данным о координате нахождения объекта.
         /// Значение координаты округляется до 2-х знаков после запятой.
         /// </summary>
-        public double Coordinate
-        {
-            get
-            {
-                return CalculateCoordinate();
-            }
-        }
+        public double Coordinate => CalculateCoordinate();
 
         /// <summary>
         /// Свойство для доступа к данным о времени движения объекта

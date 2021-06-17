@@ -22,14 +22,16 @@ namespace Model
         private double _speed;
 
         /// <summary>
+        /// Начальная координата тела
+        /// </summary>
+        private double _startCoordinate;
+
+        /// <summary>
         /// Свойство для доступа к данным о скорости движения объекта
         /// </summary>
         public double Speed
         {
-            get
-            {
-                return _speed;
-            }
+            get => _speed;
             set
             {
                 if (value > 0 && value <= UniformMotion.MaxSpeed)
@@ -47,7 +49,21 @@ namespace Model
         /// <summary>
         /// Свойство для доступа к данным о начальной координате нахождения объекта
         /// </summary>
-        public double StartCoordinate { get; set; }
+        public double StartCoordinate
+        { 
+            get => _startCoordinate;
+            set
+            {
+                if (!double.IsNaN(value))
+                {
+                    _speed = value;
+                }
+                else
+                {
+                    throw new Exception($"Нечисловое значение");
+                }
+            } 
+        }
 
 
         /// <summary>
@@ -55,10 +71,7 @@ namespace Model
         /// </summary>
         public double Acceleration
         {
-            get
-            {
-                return _acceleration;
-            }
+            get => _acceleration;
             set
             {
                 if (value != 0 && Math.Abs(value) <= UniformMotion.MaxSpeed)
